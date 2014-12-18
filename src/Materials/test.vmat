@@ -1,0 +1,10 @@
+vmat{
+	info{
+		name="test texture"
+		author=""
+		version=""
+	}
+	textures{
+		basetexture="test.tga"
+	}
+}
