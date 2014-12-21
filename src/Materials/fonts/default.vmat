@@ -1,0 +1,10 @@
+vmat{
+	info{
+		name="test GUI"
+		author=""
+		version=""
+	}
+	textures{
+		basetexture="default.tga"
+	}
+}

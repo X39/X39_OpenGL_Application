@@ -1,5 +1,6 @@
 #pragma once
 #include "globals.h"
+#include "guiBase.h"
 
 
 #include <windows.h>

@@ -6,12 +6,14 @@
 #define LOGGER_START(MIN_PRIORITY, FILE) Logger::Start(MIN_PRIORITY, FILE);
 #define LOGGER_STOP() Logger::Stop();
 #define LOGGER_WRITE(PRIORITY, MESSAGE) Logger::Write(PRIORITY, MESSAGE);
+#define LOGGER_CODE(CODE) CODE
  
 #else
  
 #define LOGGER_START(MIN_PRIORITY, FILE)
 #define LOGGER_STOP()
 #define LOGGER_WRITE(PRIORITY, MESSAGE)
+#define LOGGER_CODE(CODE)
  
 #endif
 
@@ -41,6 +43,7 @@ public:
     static void Stop();
  
     // write message
+    static void Write(Priority priority, const POINT& d);
     static void Write(Priority priority, const DWORD d);
     static void Write(Priority priority, const double);
 	static void Write(Priority priority, const std::string message);

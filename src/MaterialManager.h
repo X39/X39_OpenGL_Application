@@ -14,14 +14,14 @@ namespace X39
 
 		typedef struct stMaterial
 		{
-			tTGA textures[1];
-			GLuint textures[1];
-			bool hasTexture[1];
+			tTGA textures[2];
+			GLuint gpuTextures[2];
+			bool hasTexture[2];
 			std::string vmatPath;
 			std::string textureName;
 			std::string textureAuthor;
 			std::string textureVersion;
-			stMaterial(){memset(this, 0, sizeof(struct stMaterial));};
+			stMaterial(){memset(this, 0, sizeof(struct stMaterial));memset(this->gpuTextures, ~0, sizeof(gpuTextures));};
 		} MATERIAL;
 		class MaterialManager
 		{
@@ -33,15 +33,14 @@ namespace X39
 				~MaterialManager(void);
 				static MaterialManager& getInstance(void);
 
-				const MATERIAL* registerTexture(char* vmatPath);
+				MATERIAL* registerTexture(char* vmatPath);
 				void unregisterTexture(MATERIAL* mat);
+				
+				void loadMaterial(MATERIAL* mat);
+				void unloadMaterial(MATERIAL* mat);
 
-				void loadMaterial(const MATERIAL* mat);
-
-				const MATERIAL* getMaterialByVmatPath(const char* vmatPath);
-				const MATERIAL* getMaterialByIndex(unsigned int i);
-
-				void reloadTextures(void);
+				MATERIAL* getMaterialByVmatPath(char* vmatPath);
+				MATERIAL* getMaterialByIndex(unsigned int i);
 		};
 	}
 }

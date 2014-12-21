@@ -45,41 +45,40 @@ LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
 		}
 		return 0;
 		break;
-
 	case WM_INPUT: 
 		{
 			UINT dwSize;
 
-			GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &dwSize, 
-							sizeof(RAWINPUTHEADER));
+			GetRawInputData((HRAWINPUT)lparam, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
 			LPBYTE lpb = new BYTE[dwSize];
 			if (lpb == NULL) 
 			{
 				return 0;
 			} 
 
-			if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize, 
-				 sizeof(RAWINPUTHEADER)) != dwSize )
-				 OutputDebugString (TEXT("GetRawInputData does not return correct size !\n")); 
+			if (GetRawInputData((HRAWINPUT)lparam, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize )
+				LOGGER_WRITE(::Logger::ERRORmsg, "GetRawInputData does not return correct size !\n"); 
 
 			RAWINPUT* raw = (RAWINPUT*)lpb;
 
 			if (raw->header.dwType == RIM_TYPEKEYBOARD) 
 			{
-				if(raw->data.keyboard.MakeCode == ::EngineKeySet::KEY_F10)
+				if(raw->data.keyboard.MakeCode == ::EngineKeySet::KEY_F1)
 					exit(0);
 #if _CAPTUREKEYBOARD
 	#if _DEBUGRAW
 				char s[32];
 				
 				GetKeyNameTextA(raw->data.keyboard.VKey, s, 32);
-				printf("[WndProc - WM_INPUT - Keyboard]\t%i, %i, %i, %i, %i, %i\t%s%i\n",	
+				char str[256];
+				sprintf(str, "[Keyboard]\t%i, %i, %i, %i, %i, %i\t%s%i",	
 					raw->data.keyboard.MakeCode, 
 					raw->data.keyboard.Flags, 
 					raw->data.keyboard.Reserved, 
 					raw->data.keyboard.ExtraInformation, 
 					raw->data.keyboard.Message, 
 					raw->data.keyboard.VKey, s, GetLastError());
+				LOGGER_WRITE(::Logger::USERINPUT, str);
 	#endif
 						::X39::Singletons::KeyHandler::getInstance().handleRawKey(raw->data.keyboard.MakeCode, raw->data.keyboard.Flags);
 #endif
@@ -88,7 +87,8 @@ LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
 			{
 #if _CAPTUREMOUSE
 	#if _DEBUGRAW
-				printf("[WndProc - WM_INPUT - Mouse]\t%i, %i, %i, %i, %i, %i, %i, %i\n",	
+				char str[256];
+				sprintf(str, "[Mouse]\t%i, %i, %i, %i, %i, %i, %i, %i",	
 					raw->data.mouse.usFlags, 
 					raw->data.mouse.ulButtons, 
 					raw->data.mouse.usButtonFlags, 
@@ -97,6 +97,7 @@ LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
 					raw->data.mouse.lLastX, 
 					raw->data.mouse.lLastY, 
 					raw->data.mouse.ulExtraInformation);
+				LOGGER_WRITE(::Logger::USERINPUT, str);
 	#endif
 				LONG mouseX = raw->data.mouse.lLastX;
 				LONG mouseY = raw->data.mouse.lLastY;
@@ -448,30 +449,13 @@ bool CheckForOpenGLErrors(void)
 }
 bool debugSwitchMouseMode(int mode, USHORT key)
 {
-	if(mode == KEYEVENT_KEYDOWN && key == ::EngineKeySet::KEY_F9)
+	if(mode == KEYEVENT_KEYDOWN && (key == ::EngineKeySet::KEY_F9 || key == ::EngineKeySet::KEY_F10))
 		::X39::Singletons::Mouse::getInstance().setMode(::X39::Singletons::Mouse::getInstance().getMode() == MOUSEMODE_GAMECAMERA ? MOUSEMODE_MENU : MOUSEMODE_GAMECAMERA);
 	return false;
 }
-static unsigned int currentMaterialIndex = 0;
-static const ::X39::Singletons::MATERIAL* currentMaterial = NULL;
-bool debugChangeLoadedTexture(int mode, USHORT key)
-{
-	//used code is faulty! (GPU memory is never freed)
-	if(mode != KEYEVENT_KEYDOWN || key != ::EngineKeySet::KEY_F8)
-		return false;
-	currentMaterialIndex++;
-	currentMaterial = ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(currentMaterialIndex);
-	if(currentMaterial != NULL)
-	{
-		load_texture(&currentMaterial->textures[TEXTURE_BASETEXTURE], 0, 0);
-		return true;
-	}
-	currentMaterialIndex = -1;
-	return debugChangeLoadedTexture(mode, key);
-}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow)
 {
-	LOGGER_START(Logger::ALL, "log.txt")
+	LOGGER_START(::Logger::CONFIG, "log.txt")
 #ifdef _DEBUG
 	createConsoleWindow();
 #endif
@@ -512,14 +496,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	DWORD framerateHelper_last = GetTickCount();
 	double frameTime = 0;
 	int tickOut = 0;
-
+	
 	//Register important testing keys
 	::X39::Singletons::KeyHandler::getInstance().registerEventHandler(debugSwitchMouseMode);
-	::X39::Singletons::KeyHandler::getInstance().registerEventHandler(debugChangeLoadedTexture);
-	::X39::Singletons::Mouse::getInstance().setMode(MOUSEMODE_MENU);
-	currentMaterial = ::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test.vmat");
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test2.vmat");
-	load_texture(&currentMaterial->textures[TEXTURE_BASETEXTURE], 0, 0);
+	//Preload test materials
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test.vmat");			 //0
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test2.vmat");			 //1
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\testUi.vmat");		 //2
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\fonts\\default.vmat"); //3
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\grass.vmat");			 //4
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\pr0gramm.vmat");		 //5
+	
+
+	//start endless loop
     while(true)
     {
 		frameTime = omp_get_wtime();
@@ -537,38 +526,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
         {
 #pragma region CameraMovement
 			
-			float pitch = ::X39::Singletons::GameCamera::getInstance().getPitch();
-			float yaw = ::X39::Singletons::GameCamera::getInstance().getYaw();
-			float modificator = 1.0;
-			static glm::vec3 vec;
+			long double pitch = ::X39::Singletons::GameCamera::getInstance().getPitch();
+			long double yaw = ::X39::Singletons::GameCamera::getInstance().getYaw();
+			long double modificator = 0.1;
+			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LShift))
+				modificator = 1;
+			static ::glm::vec3 vec;
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_W))
 			{
-				float rPitch = pitch / 180 * PIconst;
-				float rYaw = yaw / 180 * PIconst;
+				long double rPitch = pitch / 180 * PIconst;
+				long double rYaw = yaw / 180 * PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_A))
 			{
-				float rPitch = 90.0 / 180 * PIconst;
-				float rYaw = (yaw - 90) / 180 * PIconst;
+				long double rPitch = 90.0 / 180 * PIconst;
+				long double rYaw = (yaw - 90) / 180 * PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_S))
 			{
-				float rPitch = pitch / 180 * PIconst;
-				float rYaw = yaw / 180 * PIconst;
+				long double rPitch = pitch / 180 * PIconst;
+				long double rYaw = yaw / 180 * PIconst;
 				vec.x -= (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y -= (cos(rPitch)) * modificator;
 				vec.z -= (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_D))
 			{
-				float rPitch = 90.0 / 180 * PIconst;
-				float rYaw = (yaw + 90) / 180 * PIconst;
+				long double rPitch = 90.0 / 180 * PIconst;
+				long double rYaw = (yaw + 90) / 180 * PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
@@ -590,48 +581,62 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			glLoadIdentity();
 
 			glViewport(0, 0, GLOBAL::RENDER::width, GLOBAL::RENDER::height);
-			gluPerspective(45.0,(float)GLOBAL::RENDER::width/(float)GLOBAL::RENDER::height, 1, 1000);
+			gluPerspective(45.0,(float)GLOBAL::RENDER::width/(float)GLOBAL::RENDER::height, 1, 10000);
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL);
 			glShadeModel(GL_SMOOTH);
 			glEnable(GL_TEXTURE_COORD_ARRAY);
-			glEnable(GL_CULL_FACE);
+			//glEnable(GL_CULL_FACE);
 			glFrontFace(GL_CCW);
 			glCullFace(GL_BACK);
+			glEnable(GL_BLEND);
+			glEnable (GL_POINT_SMOOTH);
+			glEnable (GL_LINE_SMOOTH);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 			X39::Singletons::GameCamera::getInstance().invokeGluLookAt();
+			glPushMatrix();
+			for(int i = 0; i < 100; i++)
+			{
+				for(int j = 0; j < 100; j++)
+				{
+					::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(5));
+					glTranslated(1, 0, 0);
+					glBegin(GL_QUADS);
+						glTexCoord2f(0, 0);	glVertex3f(0, 0, 0);
+						glTexCoord2f(1,	0);	glVertex3f(1, 0, 0);
+						glTexCoord2f(1,	1);	glVertex3f(1, 0, 1);
+						glTexCoord2f(0, 1);	glVertex3f(0, 0, 1);
+					glEnd();
+					//glBegin(GL_TRIANGLES);
+					//	glTexCoord2f(0.0f, 0.0f); glVertex3f(50.0f, -2.0f, 50.0f);
+					//	glTexCoord2f(0.0f, 1.0f); glVertex3f(50.0f, -2.0f, -50.0);
+					//	glTexCoord2f(1.0f, 0.0f); glVertex3f(-50.0f, -2.0f, 50.0f);
+					//
+					//	glTexCoord2f(-1.0f, 0.0f); glVertex3f(-50.0f, -2.0f, 50.0f);
+					//	glTexCoord2f(0.0f, -1.0f); glVertex3f(50.0f, -2.0f, -50.0);
+					//	glTexCoord2f(0.0f, 0.0f); glVertex3f(-50.0f, -2.0f, -50.0f);
+					//glEnd();
+				}
+				glTranslated(-100, 0, 1);
+			}
+			glPopMatrix();
 
-			glTranslated(0, -1, 0);
-			glColor3f(0, 1, 0);
-			glBegin(GL_TRIANGLES);
-				glTexCoord2f(0.0f, 0.0f); glVertex3f(50.0f, -2.0f, 50.0f);
-				glTexCoord2f(0.0f, 1.0f); glVertex3f(50.0f, -2.0f, -50.0);
-				glTexCoord2f(1.0f, 0.0f); glVertex3f(-50.0f, -2.0f, 50.0f);
-			
-				glTexCoord2f(1.0f, 0.0f); glVertex3f(-50.0f, -2.0f, 50.0f);
-				glTexCoord2f(0.0f, 1.0f); glVertex3f(50.0f, -2.0f, -50.0);
-				glTexCoord2f(0.0f, 0.0f); glVertex3f(-50.0f, -2.0f, -50.0f);
-			glEnd();
-			glMatrixMode(GL_PROJECTION);
 			//2D projection
+			glMatrixMode(GL_PROJECTION);
 			glPushMatrix();
 			glLoadIdentity();
 			glOrtho(0.0, GLOBAL::RENDER::width, GLOBAL::RENDER::height, 0.0, -1.0, 10.0);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glDisable(GL_CULL_FACE);
-
-			glClear(GL_DEPTH_BUFFER_BIT);
-
-			glBegin(GL_QUADS);
-				glColor3f(1.0f, 0.0f, 0.0);
-				glVertex2f(0.0, 0.0);
-				glVertex2f(10.0, 0.0);
-				glVertex2f(10.0, 10.0);
-				glVertex2f(0.0, 10.0);
-			glEnd();
-
+			glm::vec3 camView = ::X39::Singletons::GameCamera::getInstance().getViewVec();
+			glm::vec3 camPos = ::X39::Singletons::GameCamera::getInstance().getPos();
+			//char s[256];
+			//sprintf(s, "POS: %lf, %lf, %lf\nVIEW: %lf, %lf, %lf", camPos.x, camPos.y, camPos.z, camView.x, camView.y, camView.z);
+			//::X39::GUI::guiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), s, 1, 0, 0);
+			::X39::GUI::guiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), "Pr0gramm hat OpenGL auftrag", 1, 0, 0);
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
 			glMatrixMode(GL_MODELVIEW);

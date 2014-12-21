@@ -1,0 +1,10 @@
+vmat{
+	info{
+		name="grass texture"
+		author=""
+		version=""
+	}
+	textures{
+		basetexture="grass.tga"
+	}
+}

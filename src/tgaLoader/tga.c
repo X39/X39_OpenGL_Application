@@ -215,8 +215,8 @@ int load_TGA( tTGA *tga, const char *filename ) {
 	if (size_of_image_id) 
 		if ((int)fread( buffer, 1, size_of_image_id, f ) != size_of_image_id)
 			return FALSE;
-
-	is_inverted = (image_descriptor & 0x10) != 0;
+	//HINT: Invert is_inverted to match OpenGLs texture rendering (which is inverted ...)
+	is_inverted = !((image_descriptor & 0x10) != 0);
 
 	/* cannot handle interlacing */
 	if ((image_descriptor & 0xC0))

@@ -19,7 +19,7 @@ namespace X39
 			return instance;
 		}
 
-		const MATERIAL* MaterialManager::registerTexture(char* vmatPath)
+		MATERIAL* MaterialManager::registerTexture(char* vmatPath)
 		{
 			ISettingsFileHandler fh = ISettingsFileHandler(vmatPath);
 			SettingsDocument* sd = fh.load();
@@ -69,11 +69,11 @@ namespace X39
 					else if(strcmp(node.getName(), "info") == 0)
 					{
 						if(strcmp(opt.getName(), "name") == 0)
-							mat->textureName = (const char*) opt.getValue();
+							mat->textureName = (char*) opt.getValue();
 						else if(strcmp(opt.getName(), "author") == 0)
-							mat->textureAuthor = (const char*) opt.getValue();
+							mat->textureAuthor = (char*) opt.getValue();
 						else if(strcmp(opt.getName(), "version") == 0)
-							mat->textureVersion = (const char*) opt.getValue();
+							mat->textureVersion = (char*) opt.getValue();
 					}
 				}
 			}
@@ -104,14 +104,90 @@ namespace X39
 				}
 			}
 		}
-
-		void MaterialManager::loadMaterial(const MATERIAL* mat)
+		
+		void MaterialManager::loadMaterial(MATERIAL* mat)
 		{
-			//ToDo: Load material into GPU if not yet done (GLuint array needs to be checked here)
-			//ToDo: set material as current in GPU if already loaded into it
+			if(mat->gpuTextures[TEXTURE_BASETEXTURE] == ~0)
+			{
+				glEnable( GL_TEXTURE_2D );
+				glGenTextures( 1, &(mat->gpuTextures[TEXTURE_BASETEXTURE]) );
+
+				
+				float maxAni;
+				glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAni );                                              
+				glBindTexture(GL_TEXTURE_2D,  (mat->gpuTextures[TEXTURE_BASETEXTURE]));
+				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAni );   
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				/*
+				 *	possible values:
+				 *	- GL_NEAREST
+				 *	- GL_LINEAR
+				 *	- GL_NEAREST_MIPMAP_NEAREST
+				 *	- GL_NEAREST_MIPMAP_LINEAR
+				 *	- GL_LINEAR_MIPMAP_NEAREST
+				 *	- GL_LINEAR_MIPMAP_LINEAR
+				 */
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_REPLACE);
+
+			#ifdef __GLU_H__
+				gluBuild2DMipmaps(
+					GL_TEXTURE_2D,
+					((mat->textures[TEXTURE_BASETEXTURE]).alpha) ? 4 : 3,
+					(mat->textures[TEXTURE_BASETEXTURE]).width,
+					(mat->textures[TEXTURE_BASETEXTURE]).height,
+					((mat->textures[TEXTURE_BASETEXTURE]).alpha) ? (GL_RGBA) : (GL_RGB),
+					GL_UNSIGNED_BYTE,
+					(mat->textures[TEXTURE_BASETEXTURE]).data
+				);
+			#else
+				glTexImage2D(
+					GL_TEXTURE_2D,
+					0,
+					(tga->alpha) ? 4 : 3,
+					tga->width,
+					tga->height,
+					0,
+					(tga->alpha) ? (GL_RGBA) : (GL_RGB),
+					GL_UNSIGNED_BYTE,
+					tga->data
+				);
+			#endif
+			}
+			else
+			{
+				float maxAni;
+				glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAni );                                              
+				glBindTexture(GL_TEXTURE_2D,  (mat->gpuTextures[TEXTURE_BASETEXTURE]));
+				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAni );   
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+				/*
+				 *	possible values:
+				 *	- GL_NEAREST
+				 *	- GL_LINEAR
+				 *	- GL_NEAREST_MIPMAP_NEAREST
+				 *	- GL_NEAREST_MIPMAP_LINEAR
+				 *	- GL_LINEAR_MIPMAP_NEAREST
+				 *	- GL_LINEAR_MIPMAP_LINEAR
+				 */
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			}
+		}
+		void MaterialManager::unloadMaterial(MATERIAL* mat)
+		{
+			if(mat->gpuTextures[TEXTURE_BASETEXTURE] != ~0)
+			{
+				glDeleteTextures(1, &(mat->gpuTextures[TEXTURE_BASETEXTURE]));
+				mat->gpuTextures[TEXTURE_BASETEXTURE] = ~0;
+			}
 		}
 		
-		const MATERIAL* MaterialManager::getMaterialByVmatPath(const char* vmatPath)
+		MATERIAL* MaterialManager::getMaterialByVmatPath(char* vmatPath)
 		{
 			for(unsigned int i = 0; i < matList.size(); i++)
 			{
@@ -123,20 +199,11 @@ namespace X39
 			}
 			return NULL;
 		}
-		const MATERIAL* MaterialManager::getMaterialByIndex(unsigned int i)
+		MATERIAL* MaterialManager::getMaterialByIndex(unsigned int i)
 		{
 			if(i >= matList.size())
 				return NULL;
 			return matList[i];
-		}
-
-		void MaterialManager::reloadTextures(void)
-		{
-			while(this->matList.size() > 0)
-			{
-				unregisterTexture(this->matList[0]);
-			}
-			//TODO: Implement recursive material registration
 		}
 	}
 }

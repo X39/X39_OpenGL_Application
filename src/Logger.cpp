@@ -40,21 +40,30 @@ void Logger::Start(Priority minPriority, const char* logFile)
 {
     instance.active = true;
     instance.minPriority = minPriority;
+#ifdef ENABLE_LOGGER_ToFile
     if (logFile != "")
     {
         fileStream.open(logFile);
     }
+#endif
 }
  
 void Logger::Stop()
 {
     instance.active = false;
+#ifdef ENABLE_LOGGER_ToFile
     if (fileStream.is_open())
     {
         fileStream.close();
     }
+#endif
 }
-
+void Logger::Write(Priority priority, const POINT& d)
+{
+	char str[64];
+	sprintf(str, "x: %d | y: %d", d.x, d.y);
+	Write(priority, str);
+}
 void Logger::Write(Priority priority, const DWORD d)
 {
 	char str[64];
@@ -74,6 +83,7 @@ void Logger::Write(Priority priority, const std::string message)
 }
 void Logger::Write(Priority priority, const char* message)
 {
+#ifdef ENABLE_LOGGER_ToFile
     if (instance.active && priority >= instance.minPriority)
     {
         // identify current output stream
@@ -83,11 +93,12 @@ void Logger::Write(Priority priority, const char* message)
 				<< ' '
                 << message
                 << endl;
-#ifdef ENABLE_LOGGER_ToConsole
-		cout << PRIORITY_NAMES[priority]
-				<< ' '
-                << message
-                << endl;
-#endif
     }
+#endif
+#ifdef ENABLE_LOGGER_ToConsole
+	cout << PRIORITY_NAMES[priority]
+			<< ' '
+            << message
+            << endl;
+#endif
 }

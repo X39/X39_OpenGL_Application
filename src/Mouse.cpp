@@ -7,7 +7,7 @@ namespace X39
 	{
 		Mouse::Mouse(void)
 		{
-			mode = MOUSEMODE_GAMECAMERA;
+			setMode(MOUSEMODE_MENU);
 			centered = true;
 		}
 
@@ -79,7 +79,20 @@ namespace X39
 		}
 		void Mouse::handleMouseButtonEvent(ULONG ulButtons, USHORT usButtonData)
 		{
-
+			if(mode == MOUSEMODE_MENU)
+			{
+				POINT p;
+				if(!GetCursorPos(&p))
+				{
+					LOGGER_CODE(char str[256];)
+					LOGGER_CODE(sprintf(str, "error while receiving mouse position: %d", GetLastError());)
+					LOGGER_WRITE(::Logger::ERRORmsg, str);
+				}
+				else
+				{
+					LOGGER_WRITE(::Logger::USERINPUT, p);
+				}
+			}
 		}
 	}
 }

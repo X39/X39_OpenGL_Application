@@ -25,8 +25,9 @@
 #define _DEBUGRAW 1					//Output informations about RAW input (not processed)
 #define _CAPTUREMOUSE 1				//Capture MouseInput
 #define _CAPTUREKEYBOARD 1			//Capture KeyboardInput
-#define ENABLE_LOGGER 1				//Enable log file
-#define ENABLE_LOGGER_ToConsole 1	//Enable log file
+#define ENABLE_LOGGER 1				//Enable logger
+#define ENABLE_LOGGER_ToConsole 1	//Enable logging to console
+//#define ENABLE_LOGGER_ToFile 1		//Enable logging to console
 
 
 #include "GL\glew.h"

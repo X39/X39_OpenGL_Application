@@ -28,6 +28,12 @@
     <Filter Include="Headerdateien\dotX39">
       <UniqueIdentifier>{9408eed3-3987-4627-8709-e2bb347bf59f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\GUI">
+      <UniqueIdentifier>{9932a3f0-8e5e-484a-a4b4-ef3211215054}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\GUI">
+      <UniqueIdentifier>{18552fdc-fa00-407f-9292-575a7353409a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="startPoint.cpp">
@@ -86,6 +92,15 @@
     </ClCompile>
     <ClCompile Include="dotX39\SettingsOption.cpp">
       <Filter>Quelldateien\dotX39</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="guiBase.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleStream.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -727,6 +742,15 @@
     </ClInclude>
     <ClInclude Include="dotX39\ISettingsFileHandler.h">
       <Filter>Headerdateien\dotX39</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="guiBase.h">
+      <Filter>Headerdateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleStream.h">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
