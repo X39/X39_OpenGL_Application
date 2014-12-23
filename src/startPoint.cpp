@@ -1,3 +1,14 @@
+#include "globals.h"
+#include "KeyEventCodes.h"
+
+
+#include <windows.h>
+#include <stdlib.h>
+#include <math.h>
+#include <io.h>
+#include <fcntl.h>
+#include <omp.h>
+
 #include "startPoint.h"
 
 LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam ) 
@@ -119,6 +130,7 @@ LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
 }
 int createWindow(HINSTANCE hInstance, int iCmdShow)
 {
+	
 	/*
 	The next few lines you should already
 	be used to:  create a WNDCLASS
@@ -155,7 +167,7 @@ int createWindow(HINSTANCE hInstance, int iCmdShow)
 
 	// Adjust it.
 	AdjustWindowRect( &rect, WS_OVERLAPPEDWINDOW, false );
-	GLOBAL::windowHandle = CreateWindow(TEXT("X39"),
+	::X39::GlobalObject::getInstance().windowHandle = CreateWindow(TEXT("X39"),
 						  TEXT("EngineTest"),
 						  //WS_BORDER,
 						  0,
@@ -163,33 +175,63 @@ int createWindow(HINSTANCE hInstance, int iCmdShow)
 						  rect.right, rect.bottom,  // adjusted width and height
 						  NULL, NULL,
 						  hInstance, NULL);
-	SetWindowLongPtr(GLOBAL::windowHandle, GWL_STYLE, GetWindowLongPtr(GLOBAL::windowHandle, GWL_STYLE) & ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU));
-	SetWindowPos(GLOBAL::windowHandle, NULL, 0, 0, -1, -1, SWP_NOSIZE);
+	SetWindowLongPtr(::X39::GlobalObject::getInstance().windowHandle, GWL_STYLE, GetWindowLongPtr(::X39::GlobalObject::getInstance().windowHandle, GWL_STYLE) & ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU));
+	SetWindowPos(::X39::GlobalObject::getInstance().windowHandle, NULL, 0, 0, -1, -1, SWP_NOSIZE);
 	//Needs to be done everytime the window gets resized!
-	if(GetWindowRect(GLOBAL::windowHandle, &rect))
+	if(GetWindowRect(::X39::GlobalObject::getInstance().windowHandle, &rect))
 	{
-		::GLOBAL::RENDER::width = rect.right;
-		::GLOBAL::RENDER::height = rect.bottom;
+		::X39::GlobalObject::getInstance().render_width = rect.right;
+		::X39::GlobalObject::getInstance().render_height = rect.bottom;
 	}
 	else
 	{
 		//ERROR CODE FE001
-		MessageBox(GLOBAL::windowHandle, (LPCWSTR)L"Could not get window size\nFatal Error 001", (LPCWSTR)L"FATAL ERROR - FE001", MB_OK | MB_ICONERROR);
+		MessageBox(::X39::GlobalObject::getInstance().windowHandle, (LPCWSTR)L"Could not get window size\nFatal Error 001", (LPCWSTR)L"FATAL ERROR - FE001", MB_OK | MB_ICONERROR);
 		exit(-1);
 	}
 	//setStyleBorderless();
 
 	// check to see that the window
 	// was created successfully!
-	if( GLOBAL::windowHandle == NULL )
+	if(::X39::GlobalObject::getInstance().windowHandle == NULL)
 	{
 		//FatalAppExit( NULL, TEXT("CreateWindow() failed!") );
 		return -1;
 	}
 
 	// and show.
-	ShowWindow( GLOBAL::windowHandle, iCmdShow );
+	ShowWindow(::X39::GlobalObject::getInstance().windowHandle, iCmdShow);
 	return 0;
+}
+void resizeWindow(int posX, int posY, int width, int height)
+{
+	UINT uFlags = 0;
+	RECT rect;
+	if(posX < 0 || posX < 0)
+		uFlags |= SWP_NOREPOSITION;
+	if(width < 0 || height < 0)
+		uFlags |= SWP_NOSIZE;
+
+	SetWindowPos(::X39::GlobalObject::getInstance().windowHandle, NULL, posX, posY, width, height, uFlags);
+	//Needs to be done everytime the window gets resized!
+	if(GetWindowRect(::X39::GlobalObject::getInstance().windowHandle, &rect))
+	{
+		::X39::GlobalObject::getInstance().render_width = rect.right;
+		::X39::GlobalObject::getInstance().render_height = rect.bottom;
+	}
+	else
+	{
+		//ERROR CODE FE001
+		MessageBox(::X39::GlobalObject::getInstance().windowHandle, (LPCWSTR)L"Could not get window size\nFatal Error 001", (LPCWSTR)L"FATAL ERROR - FE001", MB_OK | MB_ICONERROR);
+		exit(-1);
+	}
+}
+RECT GetDesktopResolution()
+{
+	RECT rect;
+	const HWND hDesktop = GetDesktopWindow();
+	GetWindowRect(hDesktop, &rect);
+	return rect;
 }
 int createConsoleWindow()
 {
@@ -218,7 +260,7 @@ int setPixelFormat()
 	    variable g->  We will NOT release this DC
 	    until our app is about to exit.
 	*/
-	GLOBAL::windowDisplayContext = GetDC( GLOBAL::windowHandle );
+	::X39::GlobalObject::getInstance().windowDisplayContext = GetDC( ::X39::GlobalObject::getInstance().windowHandle );
 	/*
 	If this keeping-DC-for-life-of-program-thing
 	disturbs you as much as it disturbed me,
@@ -325,7 +367,7 @@ int setPixelFormat()
 	SAID you wanted.
 	*/
 	
-	int chosenPixelFormat = ChoosePixelFormat( GLOBAL::windowDisplayContext, &pfd );
+	int chosenPixelFormat = ChoosePixelFormat( ::X39::GlobalObject::getInstance().windowDisplayContext, &pfd );
 	/*
 	what comes back from ChoosePixelFormat() is
 	an integer identifier for a specific pixel
@@ -342,7 +384,7 @@ int setPixelFormat()
 	// C> So finally, we call SetPixelFormat() using the integer ID number
 	// that ChoosePixelFormat() returned to us previously.
 	*/
-	int result = SetPixelFormat( GLOBAL::windowDisplayContext, chosenPixelFormat, &pfd );
+	int result = SetPixelFormat( ::X39::GlobalObject::getInstance().windowDisplayContext, chosenPixelFormat, &pfd );
 
 	if (result == NULL)
 	{
@@ -368,7 +410,7 @@ int createRenderingContext()
 	such that it is COMPATIBLE
 	with the hdc.
 	*/
-	GLOBAL::windowGlRenderingContextHandle = wglCreateContext( GLOBAL::windowDisplayContext );
+	::X39::GlobalObject::getInstance().windowGlRenderingContextHandle = wglCreateContext( ::X39::GlobalObject::getInstance().windowDisplayContext );
 	/*
 	Created the rendering context
 	and saved handle to it in global 'g'.
@@ -380,7 +422,7 @@ int createRenderingContext()
 	5.  CONNECT THE RENDER CONTEXT (HGLRC)
 	    WITH THE DEVICE CONTEXT (HDC) OF WINDOW.
 	*/
-	wglMakeCurrent( GLOBAL::windowDisplayContext, GLOBAL::windowGlRenderingContextHandle );
+	wglMakeCurrent( ::X39::GlobalObject::getInstance().windowDisplayContext, ::X39::GlobalObject::getInstance().windowGlRenderingContextHandle );
 	/*
 	
 	OPEN GL INIT COMPLETED!!
@@ -394,12 +436,12 @@ int createDevices()
 	Rid[0].usUsagePage = 0x01; 
 	Rid[0].usUsage = 0x02;				// adds HID mouse
 	Rid[0].dwFlags = 0x00;	// ignores legacy mouse messages
-	Rid[0].hwndTarget = GLOBAL::windowHandle;
+	Rid[0].hwndTarget = ::X39::GlobalObject::getInstance().windowHandle;
 
 	Rid[1].usUsagePage = 0x01; 
 	Rid[1].usUsage = 0x06;				// adds HID keyboard
 	Rid[1].dwFlags = RIDEV_NOLEGACY;	//ignores legacy keyboard messages
-	Rid[1].hwndTarget = GLOBAL::windowHandle;
+	Rid[1].hwndTarget = ::X39::GlobalObject::getInstance().windowHandle;
 
 	if (RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])) == FALSE) {
 		return -1;
@@ -453,6 +495,18 @@ bool debugSwitchMouseMode(int mode, USHORT key)
 		::X39::Singletons::Mouse::getInstance().setMode(::X39::Singletons::Mouse::getInstance().getMode() == MOUSEMODE_GAMECAMERA ? MOUSEMODE_MENU : MOUSEMODE_GAMECAMERA);
 	return false;
 }
+bool doDisplayKeyHandling(int mode, USHORT key)
+{
+	return ::X39::GlobalObject::getInstance().mainDisplay->keyPressed(mode, key);
+}
+bool doDisplayMouseClickHandling(LPPOINT point, ULONG ulButtons, USHORT usButtonData)
+{
+	return ::X39::GlobalObject::getInstance().mainDisplay->mouseClick(point, ulButtons, usButtonData);
+}
+bool doDisplayMouseMoveHandling(int posX, int posY)
+{
+	return ::X39::GlobalObject::getInstance().mainDisplay->mouseMove(posX, posY);
+}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow)
 {
 	LOGGER_START(::Logger::CONFIG, "log.txt")
@@ -463,7 +517,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	wchar_t bufferStr[256];
 	if(i = GetCurrentDirectory(256, bufferStr) < 0)
 		FatalAppExit(NULL, TEXT("failed to receive execution path!"));
-	::GLOBAL::executionPath = bufferStr;
+	::X39::GlobalObject::getInstance().executionPath = bufferStr;
 	if(i = createWindow(hInstance, iCmdShow) != 0)
 	{
 		if(i == -1)
@@ -478,7 +532,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	}
 	if(i = createRenderingContext() != 0)
 	{
-
+			FatalAppExit(NULL, TEXT("createRenderingContext() failed!"));
 	}
 	if(i = createDevices() != 0)
 	{
@@ -491,11 +545,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	{
 		return 1;
 	}
+
+	::X39::GlobalObject::getInstance().mainDisplay = new ::X39::GUI::GuiBase();
+	
+	//RECT rect = GetDesktopResolution();
+	//resizeWindow(0, 0, rect.right, rect.bottom);
+
     #pragma region message loop
     MSG msg;
 	DWORD framerateHelper_last = GetTickCount();
 	double frameTime = 0;
 	int tickOut = 0;
+
+	
+	::X39::Singletons::KeyHandler::getInstance().registerEventHandler(doDisplayKeyHandling);
+	::X39::Singletons::Mouse::getInstance().registerEventHandler(doDisplayMouseClickHandling);
+	::X39::Singletons::Mouse::getInstance().registerEventHandler(doDisplayMouseMoveHandling);
 	
 	//Register important testing keys
 	::X39::Singletons::KeyHandler::getInstance().registerEventHandler(debugSwitchMouseMode);
@@ -526,40 +591,40 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
         {
 #pragma region CameraMovement
 			
-			long double pitch = ::X39::Singletons::GameCamera::getInstance().getPitch();
-			long double yaw = ::X39::Singletons::GameCamera::getInstance().getYaw();
-			long double modificator = 0.1;
+			float pitch = ::X39::Singletons::GameCamera::getInstance().getPitch();
+			float yaw = ::X39::Singletons::GameCamera::getInstance().getYaw();
+			float modificator = 0.1;
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LShift))
 				modificator = 1;
 			static ::glm::vec3 vec;
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_W))
 			{
-				long double rPitch = pitch / 180 * PIconst;
-				long double rYaw = yaw / 180 * PIconst;
+				float rPitch = pitch / 180 * PIconst;
+				float rYaw = yaw / 180 * PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_A))
 			{
-				long double rPitch = 90.0 / 180 * PIconst;
-				long double rYaw = (yaw - 90) / 180 * PIconst;
+				float rPitch = 90.0 / 180 * PIconst;
+				float rYaw = (yaw - 90) / 180 * PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_S))
 			{
-				long double rPitch = pitch / 180 * PIconst;
-				long double rYaw = yaw / 180 * PIconst;
+				float rPitch = pitch / 180 * PIconst;
+				float rYaw = yaw / 180 * PIconst;
 				vec.x -= (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y -= (cos(rPitch)) * modificator;
 				vec.z -= (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_D))
 			{
-				long double rPitch = 90.0 / 180 * PIconst;
-				long double rYaw = (yaw + 90) / 180 * PIconst;
+				float rPitch = 90.0 / 180 * PIconst;
+				float rYaw = (yaw + 90) / 180 * PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
@@ -580,8 +645,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
-			glViewport(0, 0, GLOBAL::RENDER::width, GLOBAL::RENDER::height);
-			gluPerspective(45.0,(float)GLOBAL::RENDER::width/(float)GLOBAL::RENDER::height, 1, 10000);
+			glViewport(0, 0, ::X39::GlobalObject::getInstance().render_width, ::X39::GlobalObject::getInstance().render_height);
+			gluPerspective(45.0,(float)::X39::GlobalObject::getInstance().render_width/(float)::X39::GlobalObject::getInstance().render_height, 1, 10000);
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL);
 			glShadeModel(GL_SMOOTH);
@@ -609,15 +674,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 						glTexCoord2f(1,	1);	glVertex3f(1, 0, 1);
 						glTexCoord2f(0, 1);	glVertex3f(0, 0, 1);
 					glEnd();
-					//glBegin(GL_TRIANGLES);
-					//	glTexCoord2f(0.0f, 0.0f); glVertex3f(50.0f, -2.0f, 50.0f);
-					//	glTexCoord2f(0.0f, 1.0f); glVertex3f(50.0f, -2.0f, -50.0);
-					//	glTexCoord2f(1.0f, 0.0f); glVertex3f(-50.0f, -2.0f, 50.0f);
-					//
-					//	glTexCoord2f(-1.0f, 0.0f); glVertex3f(-50.0f, -2.0f, 50.0f);
-					//	glTexCoord2f(0.0f, -1.0f); glVertex3f(50.0f, -2.0f, -50.0);
-					//	glTexCoord2f(0.0f, 0.0f); glVertex3f(-50.0f, -2.0f, -50.0f);
-					//glEnd();
 				}
 				glTranslated(-100, 0, 1);
 			}
@@ -627,21 +683,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			glMatrixMode(GL_PROJECTION);
 			glPushMatrix();
 			glLoadIdentity();
-			glOrtho(0.0, GLOBAL::RENDER::width, GLOBAL::RENDER::height, 0.0, -1.0, 10.0);
+			glOrtho(0.0, ::X39::GlobalObject::getInstance().render_width, ::X39::GlobalObject::getInstance().render_height, 0.0, -1.0, 10.0);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glDisable(GL_CULL_FACE);
 			glm::vec3 camView = ::X39::Singletons::GameCamera::getInstance().getViewVec();
 			glm::vec3 camPos = ::X39::Singletons::GameCamera::getInstance().getPos();
-			//char s[256];
-			//sprintf(s, "POS: %lf, %lf, %lf\nVIEW: %lf, %lf, %lf", camPos.x, camPos.y, camPos.z, camView.x, camView.y, camView.z);
-			//::X39::GUI::guiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), s, 1, 0, 0);
-			::X39::GUI::guiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), "Pr0gramm hat OpenGL auftrag", 1, 0, 0);
+			char s[256];
+			sprintf(s, "POS: %lf, %lf, %lf\nVIEW: %lf, %lf, %lf", camPos.x, camPos.y, camPos.z, camView.x, camView.y, camView.z);
+			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), s, 1, 0, 0);
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
 			glMatrixMode(GL_MODELVIEW);
 
-			SwapBuffers(GLOBAL::windowDisplayContext);
+			SwapBuffers(::X39::GlobalObject::getInstance().windowDisplayContext);
 			CheckForOpenGLErrors();
         }
 		frameTime = omp_get_wtime() - frameTime;

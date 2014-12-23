@@ -1,3 +1,7 @@
+#include "globals.h"
+
+#include <math.h>
+
 #include "GameCamera.h"
 
 namespace X39
@@ -41,7 +45,7 @@ namespace X39
 			//			cos(rRoll),
 			//			sin(rRoll)
 			//			);
-			double l = vec.length();
+			float l = vec.length();
 			vec.x /= l;
 			vec.y /= l;
 			vec.z /= l;

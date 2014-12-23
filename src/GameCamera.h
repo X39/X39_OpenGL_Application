@@ -1,9 +1,6 @@
 #pragma once
 
-#include "globals.h"
-
-
-#include <math.h>
+#include "glm\glm.hpp"
 
 
 namespace X39

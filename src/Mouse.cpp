@@ -1,5 +1,12 @@
+#include "globals.h"
+
+#include <Windows.h>
+#include <WindowsX.h>
+
 #include "Mouse.h"
+
 #define SENSITIVY 0.5;
+
 
 namespace X39
 {
@@ -70,18 +77,26 @@ namespace X39
 				::X39::Singletons::GameCamera::getInstance().setPitch(pitchModificator + ::X39::Singletons::GameCamera::getInstance().getPitch());
 				if(centered)
 				{
-					POINT pt = {::GLOBAL::RENDER::height / 2, ::GLOBAL::RENDER::width / 2};
-					ClientToScreen(::GLOBAL::windowHandle, &pt);
+					POINT pt = {::X39::GlobalObject::getInstance().render_height / 2, ::X39::GlobalObject::getInstance().render_width / 2};
+					ClientToScreen(::X39::GlobalObject::getInstance().windowHandle, &pt);
 					SetCursorPos(pt.x, pt.y);
 				}
 				//skipNext = true;
 			}
+			for(std::vector<bool (*)(int, int)>::iterator index = mouseMoveEventHandles.begin(); index != mouseMoveEventHandles.end(); index++)
+			{
+				if(*index != NULL)
+				{
+					if((*index)(posX, posY))
+						break;
+				}
+			}
 		}
 		void Mouse::handleMouseButtonEvent(ULONG ulButtons, USHORT usButtonData)
 		{
+			POINT p;
 			if(mode == MOUSEMODE_MENU)
 			{
-				POINT p;
 				if(!GetCursorPos(&p))
 				{
 					LOGGER_CODE(char str[256];)
@@ -93,6 +108,50 @@ namespace X39
 					LOGGER_WRITE(::Logger::USERINPUT, p);
 				}
 			}
+			for(std::vector<bool (*)(LPPOINT, ULONG, USHORT)>::iterator index = mouseClickEventHandles.begin(); index != mouseClickEventHandles.end(); index++)
+			{
+				if(*index != NULL)
+				{
+					if((*index)(&p, ulButtons, usButtonData))
+						break;
+				}
+			}
+		}
+		
+		std::vector<bool ( *)(int, int)>::iterator Mouse::registerEventHandler(bool (*fnc)(int, int))
+		{
+			for(std::vector<bool (*)(int, int)>::iterator index = mouseMoveEventHandles.begin(); index != mouseMoveEventHandles.end(); index++)
+			{
+				if(*index == NULL)
+				{
+					*index = fnc;
+					return index;
+				}
+			}
+			mouseMoveEventHandles.push_back(fnc);
+			return mouseMoveEventHandles.end() - 1;
+		}
+		void Mouse::removeEventHandler(std::vector<bool ( *)(int, int)>::iterator eventHandle)
+		{
+			*eventHandle = NULL;
+		}
+		
+		std::vector<bool ( *)(LPPOINT, ULONG, USHORT)>::iterator Mouse::registerEventHandler(bool (*fnc)(LPPOINT, ULONG, USHORT))
+		{
+			for(std::vector<bool (*)(LPPOINT, ULONG, USHORT)>::iterator index = mouseClickEventHandles.begin(); index != mouseClickEventHandles.end(); index++)
+			{
+				if(*index == NULL)
+				{
+					*index = fnc;
+					return index;
+				}
+			}
+			mouseClickEventHandles.push_back(fnc);
+			return mouseClickEventHandles.end() - 1;
+		}
+		void Mouse::removeEventHandler(std::vector<bool ( *)(LPPOINT, ULONG, USHORT)>::iterator eventHandle)
+		{
+			*eventHandle = NULL;
 		}
 	}
 }

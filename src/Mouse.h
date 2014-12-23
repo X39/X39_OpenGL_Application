@@ -1,9 +1,8 @@
 #pragma once
 
-#include "globals.h"
-
 #include <Windows.h>
-#include <WindowsX.h>
+#include <vector>
+
 namespace X39
 {
 	namespace Singletons
@@ -15,6 +14,8 @@ namespace X39
 			private:
 				unsigned int mode;
 				bool centered;
+				std::vector<bool ( *)(int, int)> mouseMoveEventHandles;
+				std::vector<bool ( *)(LPPOINT, ULONG, USHORT)> mouseClickEventHandles;
 
 				Mouse(void);
 			public:
@@ -26,6 +27,12 @@ namespace X39
 				void keepCenter(bool flag);
 				void handleMouseMove(int posX, int posY);
 				void handleMouseButtonEvent(ULONG ulButtons, USHORT usButtonData);
+
+				std::vector<bool ( *)(int, int)>::iterator registerEventHandler(bool (*fnc)(int, int));
+				void removeEventHandler(std::vector<bool ( *)(int, int)>::iterator eventHandle);
+				
+				std::vector<bool ( *)(LPPOINT, ULONG, USHORT)>::iterator registerEventHandler(bool (*fnc)(LPPOINT, ULONG, USHORT));
+				void removeEventHandler(std::vector<bool ( *)(LPPOINT, ULONG, USHORT)>::iterator eventHandle);
 		};
 	}
 }

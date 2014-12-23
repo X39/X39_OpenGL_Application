@@ -1,5 +1,12 @@
-#include "MaterialManager.h"
+#include "globals.h"
+#include "tgaLoader\tga.h"
+#include "dotX39\SettingsDocument.h"
+#include "dotX39\ISettingsFileHandler.h"
 
+#include <vector>
+#include <string>
+
+#include "MaterialManager.h"
 
 namespace X39
 {

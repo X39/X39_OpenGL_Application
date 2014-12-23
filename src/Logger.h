@@ -1,5 +1,6 @@
 #pragma once
-#include "globals.h"
+
+#include <Windows.h>
 
 #ifdef ENABLE_LOGGER
  

@@ -4,12 +4,10 @@
 //---------------------------INIT HEADER---------------------------
 #ifndef _X39_Globals
 	#define _X39_Globals 1
-#endif
-//-----------------------------------------------------------------
 
 
 
-//Include needed libaries
+//Include required libaries
 #ifndef _X39_INCLUDENEEDEDLIBARIES
 	#define _X39_INCLUDENEEDEDLIBARIES 1
 
@@ -27,7 +25,7 @@
 #define _CAPTUREKEYBOARD 1			//Capture KeyboardInput
 #define ENABLE_LOGGER 1				//Enable logger
 #define ENABLE_LOGGER_ToConsole 1	//Enable logging to console
-//#define ENABLE_LOGGER_ToFile 1		//Enable logging to console
+//#define ENABLE_LOGGER_ToFile 1		//Enable logging to log.txt
 
 
 #include "GL\glew.h"
@@ -53,19 +51,7 @@
 #include "Mouse.h"
 #include "KeyHandler.h"
 #include "MaterialManager.h"
+#include "GlobalObject.h"
 
-#ifndef _GLOBALNAMESPACE_
-	#define _GLOBALNAMESPACE_
-	namespace GLOBAL
-	{
-		namespace RENDER
-		{
-			static int width;
-			static int height;
-		}
-		static HDC windowDisplayContext;
-		static HWND windowHandle;
-		static HGLRC windowGlRenderingContextHandle;
-		static LPTSTR executionPath;
-	}
 #endif
+//-----------------------------------------------------------------

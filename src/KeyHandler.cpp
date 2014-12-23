@@ -1,3 +1,11 @@
+#include "KeyDefines.h"
+#include "KeyEventCodes.h"
+#include "GameCamera.h"
+
+#include <map>
+#include <Windows.h>
+#include <vector>
+
 #include "KeyHandler.h"
 
 namespace X39

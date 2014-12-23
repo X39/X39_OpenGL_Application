@@ -1,11 +1,10 @@
 #pragma once
-#include "globals.h"
-#include "tgaLoader\tga.h"
-#include "dotX39\SettingsDocument.h"
-#include "dotX39\ISettingsFileHandler.h"
 
-#include <vector>
+#include "tgaLoader\tga.h"
+
 #include <string>
+#include <gl/gl.h>
+
 namespace X39
 {
 	namespace Singletons

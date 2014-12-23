@@ -102,6 +102,9 @@
     <ClCompile Include="ConsoleStream.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="GlobalObject.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="startPoint.h">
@@ -750,6 +753,9 @@
       <Filter>Headerdateien\GUI</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleStream.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalObject.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

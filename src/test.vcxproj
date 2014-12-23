@@ -138,6 +138,7 @@
     <ClCompile Include="dotX39\SettingsOption.cpp" />
     <ClCompile Include="dotX39\SOFTUO_SettingsNodeCollection.cpp" />
     <ClCompile Include="GameCamera.cpp" />
+    <ClCompile Include="GlobalObject.cpp" />
     <ClCompile Include="guiBase.cpp" />
     <ClCompile Include="KeyHandler.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -353,6 +354,7 @@
     <ClInclude Include="dotX39\SettingsOption.h" />
     <ClInclude Include="dotX39\SOFTUO_SettingsNodeCollection.h" />
     <ClInclude Include="GameCamera.h" />
+    <ClInclude Include="GlobalObject.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="guiBase.h" />
     <ClInclude Include="KeyDefines.h" />

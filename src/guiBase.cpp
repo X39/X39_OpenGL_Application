@@ -1,19 +1,20 @@
-#include "guiBase.h"
+#include "globals.h"
 
-
+#include "GuiBase.h"
 namespace X39
 {
 	namespace GUI
 	{
-		guiBase::guiBase(void)
+		GuiBase::GuiBase(void)
 		{
 		}
-		guiBase::~guiBase(void)
+
+		GuiBase::~GuiBase(void)
 		{
 		}
 
 
-		void guiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
 			double textureWidth = mat->textures[TEXTURE_BASETEXTURE].width;
 			double textureHeight = mat->textures[TEXTURE_BASETEXTURE].height;
@@ -25,7 +26,8 @@ namespace X39
 				glTexCoord2f(tPosX / textureWidth,				(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX,				uiPosY +uiHeight);
 			glEnd();
 		}
-		void guiBase::drawText2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY)
+
+		void GuiBase::drawText2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY)
 		{
 			int heightOffset = 0;
 			int strLength = strlen(s);
@@ -37,21 +39,23 @@ namespace X39
 				char* pnt = strchr(lastStr, '\n');
 				if(pnt == NULL)
 				{
-					drawTextLine2D(mat, lastStr, size, uiPosX, uiPosY + ((mat->textures[0].height / 32.0) * size * heightOffset));
+					drawTextLine2D(mat, lastStr, size, uiPosX, uiPosY + (FONTSIZEBASE * size * heightOffset) + LINESPACING * heightOffset);
 					break;
 				}
 				pnt[0] = 0x00;
-				drawTextLine2D(mat, lastStr, size, uiPosX, uiPosY + ((mat->textures[0].height / 32.0) * size * heightOffset));
+				drawTextLine2D(mat, lastStr, size, uiPosX, uiPosY + (FONTSIZEBASE * size * heightOffset) + LINESPACING * heightOffset);
 				lastStr = pnt + 1;
 				heightOffset++;
 			}
 		}
-		void guiBase::drawTextLine2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY)
+
+		void GuiBase::drawTextLine2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY)
 		{
 			int strLength = strlen(s);
-			drawTextLine2D(mat, strLength, s, uiPosX, uiPosY, (mat->textures[0].width / 32.0) * size * strLength, (mat->textures[0].height / 32.0) * size);
+			drawTextLine2D(mat, strLength, s, uiPosX, uiPosY, FONTSIZEBASE * size * strLength, (mat->textures[0].height / 32.0) * size);
 		}
-		void guiBase::drawTextLine2D(::X39::Singletons::MATERIAL* mat, int strLength, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+
+		void GuiBase::drawTextLine2D(::X39::Singletons::MATERIAL* mat, int strLength, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
 			char c;
 			unsigned int index = 0;
@@ -64,7 +68,8 @@ namespace X39
 				index++;
 			};
 		}
-		void guiBase::drawChar2D(::X39::Singletons::MATERIAL* mat, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+
+		void GuiBase::drawChar2D(::X39::Singletons::MATERIAL* mat, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
 			int charCode = c;
 			if(charCode < 0)
@@ -75,24 +80,40 @@ namespace X39
 			float h = (mat->textures[0].height / 32.0);
 			drawTexture2D(mat, charCode % 32 * w, charCode / 32 * h, w, h, uiPosX, uiPosY, uiWidth, uiHeight);
 		}
+		
+		void GuiBase::draw(void)
+		{
+			for(int i = 0; i < this->children.size(); i++)
+				this->children[i].draw();
+			v_draw();
+		}
+		bool GuiBase::mouseClick(LPPOINT mousePosition, ULONG ulButtons, USHORT usButtonData)
+		{
+			for(int i = 0; i < this->children.size(); i++)
+				if(this->children[i].mouseClick(mousePosition, ulButtons, usButtonData))
+					break;
+			return this->v_mouseClick(mousePosition, ulButtons, usButtonData);
+		}
 
-		void guiBase::init()
+		bool GuiBase::mouseMove(int posX, int posY)
 		{
+			for(int i = 0; i < this->children.size(); i++)
+				if(this->children[i].mouseMove(posX, posY))
+					break;
+			return this->v_mouseMove(posX, posY);
 		}
-		void guiBase::draw()
+
+		bool GuiBase::keyPressed(int mode, USHORT key)
 		{
+			for(int i = 0; i < this->children.size(); i++)
+				if(this->children[i].keyPressed(mode, key))
+					break;
+			return this->v_keyPressed(mode, key);
 		}
-		bool guiBase::mouseClick(LPPOINT mousePosition, ULONG ulButtons, USHORT usButtonData)
-		{
-			return false;
-		}
-		bool guiBase::mouseMove(int posX, int posY)
-		{
-			return false;
-		}
-		bool guiBase::keyPressed(int mode, USHORT key)
-		{
-			return false;
-		}
-	};
-};
+
+		void GuiBase::v_draw(){}
+		bool GuiBase::v_mouseClick(LPPOINT mousePosition, ULONG ulButtons, USHORT usButtonData){return false;}
+		bool GuiBase::v_mouseMove(int posX, int posY){return false;}
+		bool GuiBase::v_keyPressed(int mode, USHORT key){return false;}
+	}
+}

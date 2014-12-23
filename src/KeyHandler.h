@@ -1,11 +1,8 @@
 #pragma once
 
 #include "KeyDefines.h"
-#include "KeyEventCodes.h"
-#include "GameCamera.h"
 
 #include <map>
-#include <Windows.h>
 #include <vector>
 
 namespace X39
@@ -31,5 +28,5 @@ namespace X39
 
 			static KeyHandler& getInstance(void);
 		};
-	}
-}
+	};
+};
