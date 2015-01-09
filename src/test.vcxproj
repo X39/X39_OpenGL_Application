@@ -132,6 +132,9 @@
     <ClCompile Include="..\include\internal\dotX39\SettingsOption.cpp" />
     <ClCompile Include="..\include\internal\dotX39\SOFTUO_SettingsNodeCollection.cpp" />
     <ClCompile Include="ConsoleStream.cpp" />
+    <ClCompile Include="DCButton.cpp" />
+    <ClCompile Include="DCTextBox.cpp" />
+    <ClCompile Include="DisplayBase.cpp" />
     <ClCompile Include="dotX39\SettingsDocument.cpp" />
     <ClCompile Include="dotX39\SettingsFileHandler_1_0.cpp" />
     <ClCompile Include="dotX39\SettingsNode.cpp" />
@@ -139,7 +142,7 @@
     <ClCompile Include="dotX39\SOFTUO_SettingsNodeCollection.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="GlobalObject.cpp" />
-    <ClCompile Include="guiBase.cpp" />
+    <ClCompile Include="GuiBase.cpp" />
     <ClCompile Include="KeyHandler.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MaterialManager.cpp" />
@@ -348,6 +351,9 @@
     <ClInclude Include="..\include\internal\dotX39\SettingsOption.h" />
     <ClInclude Include="..\include\internal\dotX39\SOFTUO_SettingsNodeCollection.h" />
     <ClInclude Include="ConsoleStream.h" />
+    <ClInclude Include="DCButton.h" />
+    <ClInclude Include="DCTextBox.h" />
+    <ClInclude Include="DisplayBase.h" />
     <ClInclude Include="dotX39\ISettingsFileHandler.h" />
     <ClInclude Include="dotX39\SettingsDocument.h" />
     <ClInclude Include="dotX39\SettingsNode.h" />
@@ -356,7 +362,7 @@
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="GlobalObject.h" />
     <ClInclude Include="globals.h" />
-    <ClInclude Include="guiBase.h" />
+    <ClInclude Include="GuiBase.h" />
     <ClInclude Include="KeyDefines.h" />
     <ClInclude Include="KeyEventCodes.h" />
     <ClInclude Include="KeyHandler.h" />

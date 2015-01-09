@@ -1,0 +1,10 @@
+vmat{
+	info{
+		name="main menu background"
+		author=""
+		version=""
+	}
+	textures{
+		basetexture="back1.tga"
+	}
+}

@@ -96,13 +96,22 @@
     <ClCompile Include="Model.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="guiBase.cpp">
-      <Filter>Quelldateien\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="ConsoleStream.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="GlobalObject.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="DisplayBase.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GuiBase.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="DCButton.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="DCTextBox.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -749,13 +758,22 @@
     <ClInclude Include="Model.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="guiBase.h">
-      <Filter>Headerdateien\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="ConsoleStream.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="GlobalObject.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="DisplayBase.h">
+      <Filter>Headerdateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GuiBase.h">
+      <Filter>Headerdateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="DCButton.h">
+      <Filter>Headerdateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="DCTextBox.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

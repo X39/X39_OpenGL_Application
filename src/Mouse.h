@@ -14,7 +14,7 @@ namespace X39
 			private:
 				unsigned int mode;
 				bool centered;
-				std::vector<bool ( *)(int, int)> mouseMoveEventHandles;
+				std::vector<bool ( *)(int, int, LPPOINT)> mouseMoveEventHandles;
 				std::vector<bool ( *)(LPPOINT, ULONG, USHORT)> mouseClickEventHandles;
 
 				Mouse(void);
@@ -28,8 +28,8 @@ namespace X39
 				void handleMouseMove(int posX, int posY);
 				void handleMouseButtonEvent(ULONG ulButtons, USHORT usButtonData);
 
-				std::vector<bool ( *)(int, int)>::iterator registerEventHandler(bool (*fnc)(int, int));
-				void removeEventHandler(std::vector<bool ( *)(int, int)>::iterator eventHandle);
+				std::vector<bool ( *)(int, int, LPPOINT)>::iterator registerEventHandler(bool (*fnc)(int, int, LPPOINT));
+				void removeEventHandler(std::vector<bool ( *)(int, int, LPPOINT)>::iterator eventHandle);
 				
 				std::vector<bool ( *)(LPPOINT, ULONG, USHORT)>::iterator registerEventHandler(bool (*fnc)(LPPOINT, ULONG, USHORT));
 				void removeEventHandler(std::vector<bool ( *)(LPPOINT, ULONG, USHORT)>::iterator eventHandle);

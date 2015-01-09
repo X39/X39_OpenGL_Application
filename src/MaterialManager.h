@@ -4,6 +4,7 @@
 
 #include <string>
 #include <gl/gl.h>
+#include <vector>
 
 namespace X39
 {

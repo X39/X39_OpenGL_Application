@@ -1,5 +1,8 @@
+#include "startPoint.h"
 #include "globals.h"
 #include "KeyEventCodes.h"
+#include "DCButton.h"
+#include "DCTextBox.h"
 
 
 #include <windows.h>
@@ -8,8 +11,6 @@
 #include <io.h>
 #include <fcntl.h>
 #include <omp.h>
-
-#include "startPoint.h"
 
 LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam ) 
 {
@@ -495,6 +496,10 @@ bool debugSwitchMouseMode(int mode, USHORT key)
 		::X39::Singletons::Mouse::getInstance().setMode(::X39::Singletons::Mouse::getInstance().getMode() == MOUSEMODE_GAMECAMERA ? MOUSEMODE_MENU : MOUSEMODE_GAMECAMERA);
 	return false;
 }
+void debugButtonTest(void)
+{
+	MessageBox(::X39::GlobalObject::getInstance().windowHandle, TEXT("TEST"), TEXT("CAPTION"), 0);
+}
 bool doDisplayKeyHandling(int mode, USHORT key)
 {
 	return ::X39::GlobalObject::getInstance().mainDisplay->keyPressed(mode, key);
@@ -503,9 +508,9 @@ bool doDisplayMouseClickHandling(LPPOINT point, ULONG ulButtons, USHORT usButton
 {
 	return ::X39::GlobalObject::getInstance().mainDisplay->mouseClick(point, ulButtons, usButtonData);
 }
-bool doDisplayMouseMoveHandling(int posX, int posY)
+bool doDisplayMouseMoveHandling(int posX, int posY, LPPOINT mousePos)
 {
-	return ::X39::GlobalObject::getInstance().mainDisplay->mouseMove(posX, posY);
+	return ::X39::GlobalObject::getInstance().mainDisplay->mouseMove(posX, posY, mousePos);
 }
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow)
 {
@@ -565,13 +570,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	//Register important testing keys
 	::X39::Singletons::KeyHandler::getInstance().registerEventHandler(debugSwitchMouseMode);
 	//Preload test materials
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test.vmat");			 //0
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test2.vmat");			 //1
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\testUi.vmat");		 //2
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\fonts\\default.vmat"); //3
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\grass.vmat");			 //4
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\pr0gramm.vmat");		 //5
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test.vmat");				//0
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test2.vmat");				//1
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\testUi.vmat");			//2
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\fonts\\default.vmat");	//3
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\grass.vmat");				//4
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\pr0gramm.vmat");			//5
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\Backgrounds\\back1.vmat");//6
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\UI\\button.vmat");		//7
 	
+//	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCButton(0, ::X39::GlobalObject::getInstance().render_height - 20, 160, 20, debugButtonTest, std::string("testButton")));
+	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCTextBox(0, ::X39::GlobalObject::getInstance().render_height - 40, ::X39::GlobalObject::getInstance().render_width / 2, 20, std::string()));
 
 	//start endless loop
     while(true)
@@ -662,11 +671,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 
 			X39::Singletons::GameCamera::getInstance().invokeGluLookAt();
 			glPushMatrix();
+			::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(4));
 			for(int i = 0; i < 100; i++)
 			{
 				for(int j = 0; j < 100; j++)
 				{
-					::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(5));
 					glTranslated(1, 0, 0);
 					glBegin(GL_QUADS);
 						glTexCoord2f(0, 0);	glVertex3f(0, 0, 0);
@@ -691,7 +700,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			glm::vec3 camPos = ::X39::Singletons::GameCamera::getInstance().getPos();
 			char s[256];
 			sprintf(s, "POS: %lf, %lf, %lf\nVIEW: %lf, %lf, %lf", camPos.x, camPos.y, camPos.z, camView.x, camView.y, camView.z);
-			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), s, 1, 0, 0);
+//			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), s, 1, 0, 0);
+
+			::X39::GlobalObject::getInstance().mainDisplay->draw();
+
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
 			glMatrixMode(GL_MODELVIEW);

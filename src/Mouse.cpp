@@ -83,11 +83,26 @@ namespace X39
 				}
 				//skipNext = true;
 			}
-			for(std::vector<bool (*)(int, int)>::iterator index = mouseMoveEventHandles.begin(); index != mouseMoveEventHandles.end(); index++)
+			
+			POINT p;
+			if(mode == MOUSEMODE_MENU)
+			{
+				if(!GetCursorPos(&p))
+				{
+					LOGGER_CODE(char str[256];)
+					LOGGER_CODE(sprintf(str, "error while receiving mouse position: %d", GetLastError());)
+					LOGGER_WRITE(::Logger::ERRORmsg, str);
+				}
+				else
+				{
+					LOGGER_WRITE(::Logger::USERINPUT, p);
+				}
+			}
+			for(std::vector<bool (*)(int, int, LPPOINT)>::iterator index = mouseMoveEventHandles.begin(); index != mouseMoveEventHandles.end(); index++)
 			{
 				if(*index != NULL)
 				{
-					if((*index)(posX, posY))
+					if((*index)(posX, posY, &p))
 						break;
 				}
 			}
@@ -118,9 +133,9 @@ namespace X39
 			}
 		}
 		
-		std::vector<bool ( *)(int, int)>::iterator Mouse::registerEventHandler(bool (*fnc)(int, int))
+		std::vector<bool ( *)(int, int, LPPOINT)>::iterator Mouse::registerEventHandler(bool (*fnc)(int, int, LPPOINT))
 		{
-			for(std::vector<bool (*)(int, int)>::iterator index = mouseMoveEventHandles.begin(); index != mouseMoveEventHandles.end(); index++)
+			for(std::vector<bool (*)(int, int, LPPOINT)>::iterator index = mouseMoveEventHandles.begin(); index != mouseMoveEventHandles.end(); index++)
 			{
 				if(*index == NULL)
 				{
@@ -131,7 +146,7 @@ namespace X39
 			mouseMoveEventHandles.push_back(fnc);
 			return mouseMoveEventHandles.end() - 1;
 		}
-		void Mouse::removeEventHandler(std::vector<bool ( *)(int, int)>::iterator eventHandle)
+		void Mouse::removeEventHandler(std::vector<bool ( *)(int, int, LPPOINT)>::iterator eventHandle)
 		{
 			*eventHandle = NULL;
 		}
