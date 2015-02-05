@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
 
 
 namespace X39
@@ -15,6 +16,7 @@ namespace X39
 				double yaw;
 				double roll;
 				::glm::vec3 pos;
+				glm::mat4 viewPort;
 
 				GameCamera(void);
 				GameCamera(GameCamera const&);
@@ -33,9 +35,11 @@ namespace X39
 				void setYaw(double val);
 				void setRoll(double val);
 				void setPos(::glm::vec3 val);
+				void setViewVec(::glm::vec3 val);
 			
-				void invokeGluLookAt(void);
+				glm::mat4 invokeGluLookAt(void);
 				::glm::vec3 getViewVec(void);
+				glm::mat4 getViewPort(void);
 				static GameCamera& getInstance(void);
 		};
 	}

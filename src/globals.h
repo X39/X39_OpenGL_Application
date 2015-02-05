@@ -28,10 +28,16 @@
 //#define ENABLE_LOGGER_ToFile 1		//Enable logging to log.txt
 
 
+
+#define strEndsWith(STRFULL, STREND) STRFULL.compare(STRFULL.length() - strlen(STREND), strlen(STREND), STREND) == 0
+
+
 #include "GL\glew.h"
 #include "GL\wglew.h"
 #include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
 #include <gl/gl.h>
+
 #include <gl/glu.h>
 
 //OBSOLTE! will be removed soon
@@ -52,6 +58,7 @@
 #include "KeyHandler.h"
 #include "MaterialManager.h"
 #include "GlobalObject.h"
+#include "FontManager.h"
 
 #endif
 //-----------------------------------------------------------------

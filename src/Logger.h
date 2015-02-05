@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <string>
 
 #ifdef ENABLE_LOGGER
  
@@ -30,9 +31,10 @@ public:
         DEBUG,
         CONFIG,
         INFO,
-        GL_ERROR,
+        INFOImportant,
         WARNING,
         ERRORmsg,
+        GL_ERROR,
         EMPTY,
         TABULATOR
     };
@@ -51,8 +53,6 @@ public:
     static void Write(Priority priority, const char* message);
  
 private:
-    // Logger adheres to the singleton design pattern, hence the private
-    // constructor, copy constructor and assignment operator.
     Logger();
     Logger(const Logger& logger);
  

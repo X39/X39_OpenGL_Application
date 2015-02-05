@@ -325,7 +325,7 @@ void free_TGA( tTGA *tga ) {
 		free( tga->data );
 
 	tga->data   = NULL;
-	tga->height =
+	tga->height = 0;
 	tga->width  = 0;
 	tga->alpha  = 0;
 }

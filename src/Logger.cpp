@@ -10,21 +10,22 @@ using namespace std;
 // static members initialization
 // --------------------------------------
  
-const string Logger::PRIORITY_NAMES[] =
+const std::string Logger::PRIORITY_NAMES[] =
 {
-    "",
-    "[FPS]\t",
-    "[USERINPUT]",
-    "[DEBUG]\t",
-    "[CONFIG]\t",
-    "[INFO]\t\t",
-    "[WARNING]\t",
-    "[ERROR]\t",
+	"",
+	"[FPS]\t",
+	"[USERINPUT]",
+	"[DEBUG]\t",
+	"[CONFIG]\t",
+	"[INFO]\t\t",
+	"[INFO]\t\t",
+	"[WARNING]\t",
+	"[ERROR]\t",
 	"[GL_ERROR]\t",
-    "",
-    "\t\t\t"
+	"",
+	"\t\t\t"
 };
- 
+
 Logger Logger::instance;
 static std::ofstream fileStream;
  

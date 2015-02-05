@@ -10,18 +10,35 @@ namespace X39
 {
 	namespace Singletons
 	{
-		#define TEXTURE_BASETEXTURE 0
+		#define TEXTURE_NA 0
+		#define TEXTURE_DEFAULT 1
+		#define TEXTURE_BASE 2
+		#define TEXTURE_NORMAL 3
 
+		typedef struct stTexture
+		{
+			std::string subname;
+			unsigned int type;
+			long width;
+			long height;
+			long trueWidth;
+			long trueHeight;
+			unsigned char *data;
+			long sizeOfDataArray;
+			int internalFormat;
+			int format;
+			stTexture(){memset(this, 0, sizeof(struct stTexture));};
+		} TEXTURE;
 		typedef struct stMaterial
 		{
-			tTGA textures[2];
-			GLuint gpuTextures[2];
-			bool hasTexture[2];
+			//tTGA textures[2];
+			//GLuint gpuTextures[2];
+			//bool hasTexture[2];
+			std::vector<TEXTURE*> textures;
+			std::vector<GLuint> gpuTextures;
 			std::string vmatPath;
-			std::string textureName;
-			std::string textureAuthor;
-			std::string textureVersion;
-			stMaterial(){memset(this, 0, sizeof(struct stMaterial));memset(this->gpuTextures, ~0, sizeof(gpuTextures));};
+			std::vector<std::string> informationValue;
+			std::vector<std::string> informationTitle;
 		} MATERIAL;
 		class MaterialManager
 		{
@@ -32,15 +49,16 @@ namespace X39
 			public:
 				~MaterialManager(void);
 				static MaterialManager& getInstance(void);
-
+				
 				MATERIAL* registerTexture(char* vmatPath);
 				void unregisterTexture(MATERIAL* mat);
+				MATERIAL* createMaterial();
 				
-				void loadMaterial(MATERIAL* mat);
-				void unloadMaterial(MATERIAL* mat);
+				void loadMaterial(MATERIAL* mat, unsigned int i = 0);
+				void unloadMaterial(MATERIAL* mat, unsigned int i = 0);
 
 				MATERIAL* getMaterialByVmatPath(char* vmatPath);
 				MATERIAL* getMaterialByIndex(unsigned int i);
 		};
-	}
-}
+	};
+};

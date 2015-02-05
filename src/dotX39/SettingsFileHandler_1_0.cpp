@@ -11,7 +11,7 @@ import java.util.ArrayList;
 	
 	
 	
-	ISettingsFileHandler::ISettingsFileHandler(char* file) {
+	ISettingsFileHandler::ISettingsFileHandler(const char* file) {
 		_file = "";
 		_dir = "";
 		setFile(file);
@@ -20,13 +20,13 @@ import java.util.ArrayList;
 		return "1.0";
 	}
 
-	void ISettingsFileHandler::setFile(char* str){
+	void ISettingsFileHandler::setFile(const char* str){
 		std::string s = str;
 		char c = '/';
 		if(s.find("\\") != std::string::npos)
 			c = '\\';
 		_file = s;
-		_dir = s.substr(0, s.length() - s.rfind(c));
+		_dir = s.substr(0, s.length() - s.rfind(c) - 1);
 		
 	}
 	//char* ISettingsFileHandler::split(char* regex, char splitChar){

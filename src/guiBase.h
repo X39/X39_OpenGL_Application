@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MaterialManager.h"
+#include "FontManager.h"
 
 #include <vector>
 #include <Windows.h>
@@ -24,18 +25,18 @@ namespace X39
 
 
 			public:
-				GuiBase(void);
-				GuiBase(bool focusable);
+				GuiBase(bool focusable = true);
 				~GuiBase(void);
 
 				void addChild(GuiBase* child);
 		
 				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
-				static void drawText2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY);
-				static void drawTextLine2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY);
-				static void drawTextLine2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY, double maxWidth);
-				static void drawTextLine2D(::X39::Singletons::MATERIAL* mat, int strLen, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
-				static void drawChar2D(::X39::Singletons::MATERIAL* mat, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
+				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
+				static void drawText2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY);
+				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY);
+				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY, double maxWidth);
+				static void drawTextLine2D(::X39::Singletons::FONT* mat, int strLen, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
+				static void drawChar2D(::X39::Singletons::FONT* mat, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
 				
 				bool isFocused(void);
 				void setFocused(void);

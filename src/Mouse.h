@@ -24,6 +24,7 @@ namespace X39
 				void setMode(unsigned int m);
 				unsigned int getMode(void);
 				void showPointer(bool flag);
+				void keepCenter();
 				void keepCenter(bool flag);
 				void handleMouseMove(int posX, int posY);
 				void handleMouseButtonEvent(ULONG ulButtons, USHORT usButtonData);

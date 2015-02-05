@@ -1,10 +1,18 @@
-vmat{
-	info{
+vmat
+{
+	info
+	{
 		name="grass texture"
 		author=""
 		version=""
+		someOtherInfo="blabla"
 	}
-	textures{
-		basetexture="grass.tga"
+	textures
+	{
+		texture01
+		{
+			relativePath="grass.tga"
+			type="1"
+		}
 	}
 }

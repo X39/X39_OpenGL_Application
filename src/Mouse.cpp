@@ -15,7 +15,7 @@ namespace X39
 		Mouse::Mouse(void)
 		{
 			setMode(MOUSEMODE_MENU);
-			centered = true;
+			centered = false;
 		}
 
 
@@ -54,9 +54,23 @@ namespace X39
 			else
 				while(ShowCursor(flag) >= 0);
 		}
+		void Mouse::keepCenter()
+		{
+			keepCenter(centered);
+		}
 		void Mouse::keepCenter(bool flag)
 		{
-			this->centered = flag;
+			centered = flag;
+			if(flag)
+			{
+				RECT rect;
+				GetWindowRect(::X39::GlobalObject::getInstance().windowHandle, &rect);
+				ClipCursor(&rect);
+			}
+			else
+			{
+				ClipCursor(NULL);
+			}
 		}
 		void Mouse::handleMouseMove(int posX, int posY)
 		{
@@ -75,13 +89,6 @@ namespace X39
 				}
 				::X39::Singletons::GameCamera::getInstance().setYaw(yawModificator + ::X39::Singletons::GameCamera::getInstance().getYaw());
 				::X39::Singletons::GameCamera::getInstance().setPitch(pitchModificator + ::X39::Singletons::GameCamera::getInstance().getPitch());
-				if(centered)
-				{
-					POINT pt = {::X39::GlobalObject::getInstance().render_height / 2, ::X39::GlobalObject::getInstance().render_width / 2};
-					ClientToScreen(::X39::GlobalObject::getInstance().windowHandle, &pt);
-					SetCursorPos(pt.x, pt.y);
-				}
-				//skipNext = true;
 			}
 			
 			POINT p;

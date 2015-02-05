@@ -13,7 +13,7 @@ class ISettingsFileHandler {
 		std::string _file;
 		std::string _dir;
 	public:
-		ISettingsFileHandler::ISettingsFileHandler(char* file);
+		ISettingsFileHandler::ISettingsFileHandler(const char* file);
 		/**
 		 * Used to get the Special SettingsFileHandlerVersion
 		 * @return SettingsFileHandlerVersion
@@ -23,7 +23,7 @@ class ISettingsFileHandler {
 		 * Used to set the specified file you want to write to!<br>
 		 * @param file
 		 */
-		void setFile(char* s);
+		void setFile(const char* s);
 		/**
 		 * 
 		 * @return SettingsDocument of the specified File

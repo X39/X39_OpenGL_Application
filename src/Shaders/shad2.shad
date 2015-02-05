@@ -1,0 +1,11 @@
+shader
+{
+	vertexShader
+	{
+		relativePath = "base.vert"
+	}
+	fragmentShader
+	{
+		relativePath = "base.frag"
+	}
+}

@@ -19,13 +19,64 @@ namespace X39
 		DCTextBox::~DCTextBox(void)
 		{
 		}
-		
+		static bool deleteButtonPressed = false;
+		static unsigned int deleteButtonPressedTimeout = 0;
 		void DCTextBox::e_draw()
 		{
-			::X39::Singletons::MATERIAL* mat = ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(7);
-			drawTexture2D(mat, 0, 0, mat->textures[0].width, mat->textures[0].height, posX, posY, width, height);
+			::X39::Singletons::MATERIAL* mat = ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(1);
+			int textureIndex = 1;
+			if(width < 16 || height < 16)
+			{
+				drawTexture2D(mat, textureIndex, 0, 0, mat->textures[0]->width, mat->textures[0]->height, posX, posY, width, height);
+			}
+			else
+			{
+				//TopLeft corner
+				drawTexture2D(mat, textureIndex, 0, 0, 16, 16, posX, posY, 16, 16);
+				if(height > 32)
+				{
+					//Left Side
+					drawTexture2D(mat, textureIndex, 0, 16, 16, 16, posX, posY + 16, 16, height - 32);
+				}
+				//BottomLeft corner
+				drawTexture2D(mat, textureIndex, 0, 64 - 16, 16, 16, posX, posY + height - 16, 16, 16);
+
+				//TopRight corner
+				drawTexture2D(mat, textureIndex, 64 - 16, 0, 16, 16, posX + width - 16, posY, 16, 16);
+				if(height > 32)
+				{
+					//Right Side
+					drawTexture2D(mat, textureIndex, 64 - 16, 16, 16, 16, posX + width - 16, posY + 16, 16, height - 32);
+				}
+				//BottomRight corner
+				drawTexture2D(mat, textureIndex, 64 - 16, 64 - 16, 16, 16, posX + width - 16, posY + height - 16, 16, 16);
+				
+				if(width > 32)
+				{
+					//Top side
+					drawTexture2D(mat, textureIndex, 16, 0, 16, 16, posX + 16, posY, width - 32, 16);
+					
+					if(height > 32)
+					{
+						//Middle side
+						drawTexture2D(mat, textureIndex, 16, 16, 16, 16, posX + 16, posY + 16, width - 32, height - 32);
+					}
+					//Bottom side
+					drawTexture2D(mat, textureIndex, 16, 64 - 16, 16, 16, posX + 16, posY + height - 16, width - 32, 16);
+				}
+			}
 			if(!innerText.empty())
-				drawTextLine2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), innerText.c_str(), height / FONTSIZEBASE, posX, posY, width);
+				drawTextLine2D(::X39::Singletons::FontManager::getInstance().getFont(0), innerText.c_str(), height / FONTSIZEBASE, posX, posY, width);
+			if(deleteButtonPressed)
+			{
+				deleteButtonPressedTimeout++;
+				if(deleteButtonPressedTimeout > 25)
+				{
+					deleteButtonPressedTimeout = 20;
+					if(innerText.size() > 0)
+						innerText.pop_back();
+				}
+			}
 		}
 		bool DCTextBox::e_mouseClick(LPPOINT mousePos, ULONG ulButtons, USHORT usButtonData)
 		{
@@ -40,8 +91,6 @@ namespace X39
 		{
 			if(!isFocused())
 				return false;
-			if(mode != KEYEVENT_KEYDOWN)
-				return false;
 			char c = MapVirtualKey(MapVirtualKey(key, MAPVK_VSC_TO_VK), MAPVK_VK_TO_CHAR);
 			if(c == 0x00)
 				return false;
@@ -51,11 +100,16 @@ namespace X39
 			//ToDo: find a better way to get correct key ...
 			if(c == 0x08)
 			{
-				if(innerText.length() > 0)
-					innerText.pop_back();
+				deleteButtonPressed = mode == KEYEVENT_KEYDOWN;
+				deleteButtonPressedTimeout = 0;
+				if(deleteButtonPressed)
+					if(innerText.size() > 0)
+						innerText.pop_back();
 			}
 			else
 			{
+				if(mode != KEYEVENT_KEYDOWN)
+					return false;
 				innerText.push_back(c);
 			}
 			return false;

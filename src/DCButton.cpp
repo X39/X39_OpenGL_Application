@@ -18,10 +18,50 @@ namespace X39
 
 		void DCButton::e_draw()
 		{
-			::X39::Singletons::MATERIAL* mat = ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(7);
-			drawTexture2D(mat, 0, 0, mat->textures[0].width, mat->textures[0].height, posX, posY, width, height);
+			::X39::Singletons::MATERIAL* mat = ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(1);
+			int textureIndex = 0;
+			if(width < 16 || height < 16)
+			{
+				drawTexture2D(mat, textureIndex, 0, 0, mat->textures[0]->width, mat->textures[0]->height, posX, posY, width, height);
+			}
+			else
+			{
+				//TopLeft corner
+				drawTexture2D(mat, textureIndex, 0, 0, 16, 16, posX, posY, 16, 16);
+				if(height > 32)
+				{
+					//Left Side
+					drawTexture2D(mat, textureIndex, 0, 16, 16, 16, posX, posY + 16, 16, height - 32);
+				}
+				//BottomLeft corner
+				drawTexture2D(mat, textureIndex, 0, 64 - 16, 16, 16, posX, posY + height - 16, 16, 16);
+
+				//TopRight corner
+				drawTexture2D(mat, textureIndex, 64 - 16, 0, 16, 16, posX + width - 16, posY, 16, 16);
+				if(height > 32)
+				{
+					//Right Side
+					drawTexture2D(mat, textureIndex, 64 - 16, 16, 16, 16, posX + width - 16, posY + 16, 16, height - 32);
+				}
+				//BottomRight corner
+				drawTexture2D(mat, textureIndex, 64 - 16, 64 - 16, 16, 16, posX + width - 16, posY + height - 16, 16, 16);
+				
+				if(width > 32)
+				{
+					//Top side
+					drawTexture2D(mat, textureIndex, 16, 0, 16, 16, posX + 16, posY, width - 32, 16);
+					
+					if(height > 32)
+					{
+						//Middle side
+						drawTexture2D(mat, textureIndex, 16, 16, 16, 16, posX + 16, posY + 16, width - 32, height - 32);
+					}
+					//Bottom side
+					drawTexture2D(mat, textureIndex, 16, 64 - 16, 16, 16, posX + 16, posY + height - 16, width - 32, 16);
+				}
+			}
 			if(!displayText.empty())
-				drawTextLine2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), displayText.length(), displayText.c_str(), posX, posY, width, height);
+				drawTextLine2D(::X39::Singletons::FontManager::getInstance().getFont(0), displayText.length(), displayText.c_str(), posX, posY, width, height);
 		}
 		bool DCButton::e_mouseClick(LPPOINT mousePos, ULONG ulButtons, USHORT usButtonData)
 		{

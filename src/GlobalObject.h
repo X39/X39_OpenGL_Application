@@ -16,7 +16,7 @@ namespace X39
 			int render_width;
 			int render_height;
 
-			HDC windowDisplayContext;
+			HDC handleDeviceContext;
 			HWND windowHandle;
 			HGLRC windowGlRenderingContextHandle;
 			LPTSTR executionPath;

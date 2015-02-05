@@ -1,16 +1,10 @@
 #include "globals.h"
-
 #include "GuiBase.h"
+#include "Shader.h"
 namespace X39
 {
 	namespace GUI
 	{
-		GuiBase::GuiBase(void)
-		{
-			enabled = true;
-			isFocusable = true;
-			focusedGUI = NULL;
-		}
 		GuiBase::GuiBase(bool focusable)
 		{
 			enabled = true;
@@ -28,18 +22,53 @@ namespace X39
 
 		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
-			double textureWidth = mat->textures[TEXTURE_BASETEXTURE].width;
-			double textureHeight = mat->textures[TEXTURE_BASETEXTURE].height;
-			::X39::Singletons::MaterialManager::getInstance().loadMaterial(mat);
+			drawTexture2D(mat, 0, tPosX, tPosY, tWidth, tHeight, uiPosX, uiPosY, uiWidth, uiHeight);
+		}
+		//static GLuint vbo_textDrawingVertices = 0;
+		//static GLuint vbo_textDrawingIndexes = 0;
+		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+		{
+			//if(vbo_textDrawingVertices == 0)
+			//{
+			//	glGenBuffersARB(1, &vbo_textDrawingVertices);
+			//	glGenBuffersARB(1, &vbo_textDrawingIndexes);
+			//	GLfloat vertices[] = {0, 1, 2, 3};
+			//	glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_textDrawingIndexes);
+			//	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, sizeof(vertices), vertices, GL_STATIC_DRAW_ARB);
+			//}
+			::X39::Singletons::TEXTURE* texture = mat->textures[textureIndex];
+			double textureWidth = texture->width;
+			double textureHeight = texture->height;
+			//if(texture->trueHeight != 0)
+			//	uiPosY += ((texture->height - texture->trueHeight) / (double)texture->height) * uiHeight / 2;
+			::X39::Singletons::MaterialManager::getInstance().loadMaterial(mat, textureIndex);
+			//glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_textDrawingVertices);
+			//glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_textDrawingIndexes);
+//			::X39::Singletons::FontManager::getInstance().fontShader.use(0);
+			//GLfloat vertices[] = {
+			//						uiPosX,				uiPosY,
+			//						uiPosX + uiWidth,	uiPosY,
+			//						uiPosX + uiWidth,	uiPosY +uiHeight,
+			//						uiPosX,				uiPosY +uiHeight
+			//					 };
+			//glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices), vertices, GL_STREAM_DRAW_ARB);
+			//glEnableClientState(GL_VERTEX_ARRAY);
+			//glVertexPointer(3, GL_FLOAT, 0, 0);
+			//glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, 0);
+			//glDisableClientState(GL_VERTEX_ARRAY);
+			//glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+			//glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 			glBegin(GL_QUADS);
 				glTexCoord2f(tPosX / textureWidth,				tPosY / textureHeight				);	glVertex2f(uiPosX,				uiPosY			);
 				glTexCoord2f((tPosX + tWidth) / textureWidth,	tPosY / textureHeight				);	glVertex2f(uiPosX + uiWidth,	uiPosY			);
 				glTexCoord2f((tPosX + tWidth) / textureWidth,	(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX + uiWidth,	uiPosY +uiHeight);
 				glTexCoord2f(tPosX / textureWidth,				(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX,				uiPosY +uiHeight);
 			glEnd();
+
+//			::X39::Singletons::FontManager::getInstance().fontShader.unuse();
 		}
 		
-		void GuiBase::drawText2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY)
+		void GuiBase::drawText2D(::X39::Singletons::FONT* font, const char* s, float size, double uiPosX, double uiPosY)
 		{
 			int heightOffset = 0;
 			int strLength = strlen(s);
@@ -51,22 +80,22 @@ namespace X39
 				char* pnt = strchr(lastStr, '\n');
 				if(pnt == NULL)
 				{
-					drawTextLine2D(mat, lastStr, size, uiPosX, uiPosY + (FONTSIZEBASE * size * heightOffset) + LINESPACING * heightOffset);
+					drawTextLine2D(font, lastStr, size, uiPosX, uiPosY + (FONTSIZEBASE * size * heightOffset) + LINESPACING * heightOffset);
 					break;
 				}
 				pnt[0] = 0x00;
-				drawTextLine2D(mat, lastStr, size, uiPosX, uiPosY + (FONTSIZEBASE * size * heightOffset) + LINESPACING * heightOffset);
+				drawTextLine2D(font, lastStr, size, uiPosX, uiPosY + (FONTSIZEBASE * size * heightOffset) + LINESPACING * heightOffset);
 				lastStr = pnt + 1;
 				heightOffset++;
 			}
 		}
 		
-		void GuiBase::drawTextLine2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY)
+		void GuiBase::drawTextLine2D(::X39::Singletons::FONT* font, const char* s, float size, double uiPosX, double uiPosY)
 		{
 			int strLength = strlen(s);
-			drawTextLine2D(mat, strLength, s, uiPosX, uiPosY, FONTSIZEBASE * size * strLength, (mat->textures[0].height / 32.0) * size);
+			drawTextLine2D(font, strLength, s, uiPosX, uiPosY, FONTSIZEBASE * size * strLength, 12 * size);
 		}
-		void GuiBase::drawTextLine2D(::X39::Singletons::MATERIAL* mat, const char* s, float size, double uiPosX, double uiPosY, double maxWidth)
+		void GuiBase::drawTextLine2D(::X39::Singletons::FONT* font, const char* s, float size, double uiPosX, double uiPosY, double maxWidth)
 		{
 			int strLength = strlen(s);
 			double width = FONTSIZEBASE * size * strLength;
@@ -75,10 +104,10 @@ namespace X39
 				strLength -= (int)((width - maxWidth) / FONTSIZEBASE / size + 0.5);
 				width = FONTSIZEBASE * size * strLength;
 			}
-			drawTextLine2D(mat, strLength, s, uiPosX, uiPosY, width, FONTSIZEBASE * size);
+			drawTextLine2D(font, strLength, s, uiPosX, uiPosY, width, FONTSIZEBASE * size);
 		}
 
-		void GuiBase::drawTextLine2D(::X39::Singletons::MATERIAL* mat, int strLength, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+		void GuiBase::drawTextLine2D(::X39::Singletons::FONT* font, int strLength, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
 			char c;
 			for(int i = 0; i < strLength; i++)
@@ -86,20 +115,23 @@ namespace X39
 				c = s[i];
 				if(c == 0x00)
 					break;
-				drawChar2D(mat, c, uiPosX + (uiWidth / strLength * i), uiPosY, uiWidth / strLength, uiHeight);
+				if(c == ' ')
+					continue;
+				drawChar2D(font, c, uiPosX + (uiWidth / strLength * i), uiPosY, uiWidth / strLength, uiHeight);
 			};
 		}
 
-		void GuiBase::drawChar2D(::X39::Singletons::MATERIAL* mat, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+		void GuiBase::drawChar2D(::X39::Singletons::FONT* font, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
 			int charCode = c;
 			if(charCode < 0)
 				charCode = 0;
 			if(charCode > 255)
 				return;
-			float w = (mat->textures[0].width / 32.0);
-			float h = (mat->textures[0].height / 32.0);
-			drawTexture2D(mat, charCode % 32 * w, charCode / 32 * h, w, h, uiPosX, uiPosY, uiWidth, uiHeight);
+			unsigned int fontIndex = ::X39::Singletons::FontManager::getInstance().getCharTextureIndex(font, c);
+			float w = font->material->textures[fontIndex]->width;
+			float h = font->material->textures[fontIndex]->height;
+			drawTexture2D(font->material, fontIndex, charCode % 32 * w, charCode / 32 * h, w, h, uiPosX, uiPosY, uiWidth, uiHeight);
 		}
 		
 		bool GuiBase::isFocused(void)

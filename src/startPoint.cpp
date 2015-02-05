@@ -3,6 +3,8 @@
 #include "KeyEventCodes.h"
 #include "DCButton.h"
 #include "DCTextBox.h"
+#include "Shader.h"
+#include "Model.h"
 
 
 #include <windows.h>
@@ -11,24 +13,24 @@
 #include <io.h>
 #include <fcntl.h>
 #include <omp.h>
+#include <array>
 
 LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam ) 
 {
 	switch( message )
 	{
-	case WM_CREATE:
-		Beep( 50, 10 );
-		return 0;
-		break;
+//	case WM_CREATE:
+//		Beep( 50, 10 );
+//		return 0;
+//		break;
 	case WM_DESTROY:
 		PostQuitMessage( 0 ) ;
 		return 0;
 		break;
-	case WM_KILLFOCUS:
-		//pMouseHandler->setFocus(false);
-		break;
+//	case WM_KILLFOCUS:
+//		break;
 	case WM_SETFOCUS:
-		//pMouseHandler->setFocus(true);
+		::X39::Singletons::Mouse::getInstance().keepCenter();
 		break;
 //	case WM_MOUSEMOVE://http://msdn.microsoft.com/en-us/library/windows/desktop/ms645616(v=vs.85).aspx
 //		pMouseHandler->mouseMove(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
@@ -38,25 +40,25 @@ LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
 //		::X39::Singletons::KeyHandler::getInstance().KeyEvent(wparam);
 //		return 0;
 //	}
-	case WM_ENTERSIZEMOVE:
-		//pMouseHandler->setFocus(false);
-		return TRUE;
-		break;
-	case WM_EXITSIZEMOVE:
-		//pMouseHandler->setFocus(true);
-		return 0;
-		break;
-	case WM_PAINT:
-		{
-			HDC hdc;
-			PAINTSTRUCT ps;
-			hdc = BeginPaint( hwnd, &ps );
-				// don't draw here.  would be waaay too slow.
-				// draw in the draw() function instead.
-			EndPaint( hwnd, &ps );
-		}
-		return 0;
-		break;
+//	case WM_ENTERSIZEMOVE:
+//		//pMouseHandler->setFocus(false);
+//		return TRUE;
+//		break;
+//	case WM_EXITSIZEMOVE:
+//		//pMouseHandler->setFocus(true);
+//		return 0;
+//		break;
+//	case WM_PAINT:
+//		{
+//			HDC hdc;
+//			PAINTSTRUCT ps;
+//			hdc = BeginPaint( hwnd, &ps );
+//				// don't draw here.  would be waaay too slow.
+//				// draw in the draw() function instead.
+//			EndPaint( hwnd, &ps );
+//		}
+//		return 0;
+//		break;
 	case WM_INPUT: 
 		{
 			UINT dwSize;
@@ -261,7 +263,7 @@ int setPixelFormat()
 	    variable g->  We will NOT release this DC
 	    until our app is about to exit.
 	*/
-	::X39::GlobalObject::getInstance().windowDisplayContext = GetDC( ::X39::GlobalObject::getInstance().windowHandle );
+	::X39::GlobalObject::getInstance().handleDeviceContext = GetDC( ::X39::GlobalObject::getInstance().windowHandle );
 	/*
 	If this keeping-DC-for-life-of-program-thing
 	disturbs you as much as it disturbed me,
@@ -368,7 +370,7 @@ int setPixelFormat()
 	SAID you wanted.
 	*/
 	
-	int chosenPixelFormat = ChoosePixelFormat( ::X39::GlobalObject::getInstance().windowDisplayContext, &pfd );
+	int chosenPixelFormat = ChoosePixelFormat( ::X39::GlobalObject::getInstance().handleDeviceContext, &pfd );
 	/*
 	what comes back from ChoosePixelFormat() is
 	an integer identifier for a specific pixel
@@ -385,7 +387,7 @@ int setPixelFormat()
 	// C> So finally, we call SetPixelFormat() using the integer ID number
 	// that ChoosePixelFormat() returned to us previously.
 	*/
-	int result = SetPixelFormat( ::X39::GlobalObject::getInstance().windowDisplayContext, chosenPixelFormat, &pfd );
+	int result = SetPixelFormat( ::X39::GlobalObject::getInstance().handleDeviceContext, chosenPixelFormat, &pfd );
 
 	if (result == NULL)
 	{
@@ -411,7 +413,7 @@ int createRenderingContext()
 	such that it is COMPATIBLE
 	with the hdc.
 	*/
-	::X39::GlobalObject::getInstance().windowGlRenderingContextHandle = wglCreateContext( ::X39::GlobalObject::getInstance().windowDisplayContext );
+	::X39::GlobalObject::getInstance().windowGlRenderingContextHandle = wglCreateContext( ::X39::GlobalObject::getInstance().handleDeviceContext );
 	/*
 	Created the rendering context
 	and saved handle to it in global 'g'.
@@ -423,7 +425,7 @@ int createRenderingContext()
 	5.  CONNECT THE RENDER CONTEXT (HGLRC)
 	    WITH THE DEVICE CONTEXT (HDC) OF WINDOW.
 	*/
-	wglMakeCurrent( ::X39::GlobalObject::getInstance().windowDisplayContext, ::X39::GlobalObject::getInstance().windowGlRenderingContextHandle );
+	wglMakeCurrent( ::X39::GlobalObject::getInstance().handleDeviceContext, ::X39::GlobalObject::getInstance().windowGlRenderingContextHandle );
 	/*
 	
 	OPEN GL INIT COMPLETED!!
@@ -570,18 +572,59 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	//Register important testing keys
 	::X39::Singletons::KeyHandler::getInstance().registerEventHandler(debugSwitchMouseMode);
 	//Preload test materials
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test.vmat");				//0
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\test2.vmat");				//1
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\testUi.vmat");			//2
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\fonts\\default.vmat");	//3
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\grass.vmat");				//4
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\pr0gramm.vmat");			//5
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\Backgrounds\\back1.vmat");//6
-	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\UI\\button.vmat");		//7
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\grass.vmat");
+	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\ui_base\\ui_base.vmat");
+	::X39::Singletons::FontManager::getInstance().registerFont("Fonts\\arial.ttf");
+	::X39::Shader shad;
+	shad.load("Shaders\\base.shad");
+	shad.compile();
+	::X39::Model model = ::X39::Model("Models\\test.obj");
+	model.loader_dotObj();
 	
-//	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCButton(0, ::X39::GlobalObject::getInstance().render_height - 20, 160, 20, debugButtonTest, std::string("testButton")));
+	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCButton(0, ::X39::GlobalObject::getInstance().render_height - 200, 160, 20, debugButtonTest, std::string("testButton")));
 	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCTextBox(0, ::X39::GlobalObject::getInstance().render_height - 40, ::X39::GlobalObject::getInstance().render_width / 2, 20, std::string()));
+	//::X39::Singletons::GameCamera::getInstance().setViewVec(glm::vec3(0.67156154, -0.35836795, 0.64851946));
+	//::X39::Singletons::GameCamera::getInstance().setPos(glm::vec3(-3.5397613, 6.5228815, -3.5409057));
+	GLuint vaoID;
+	glGenVertexArrays(1, &vaoID);
+	glBindVertexArray(vaoID)
 
+	GLuint vertBufferID, indexBufferID;
+	glGenBuffers(1, &vertBufferID);
+	glGenBuffers(1, &indexBufferID);
+
+	struct Vec2 { float x, y; };
+	struct Vec3 { float x, y, z; };
+	struct Vert { Vec3 pos; Vec2 tex; };
+
+	std::array<Vert, 8> cubeVerts = {{
+		{ {  0.5f,  0.5f,  0.5f }, { 1.0f, 0.0f } }, { {  0.5f,  0.5f, -0.5f }, { 1.0f, 1.0f } },
+		{ {  0.5f, -0.5f, -0.5f }, { 0.0f, 1.0f } }, { {  0.5f, -0.5f,  0.5f }, { 0.0f, 0.0f } },
+		{ { -0.5f,  0.5f,  0.5f }, { 0.0f, 0.0f } }, { { -0.5f,  0.5f, -0.5f }, { 0.0f, 1.0f } },
+		{ { -0.5f, -0.5f, -0.5f }, { 1.0f, 1.0f } }, { { -0.5f, -0.5f,  0.5f }, { 1.0f, 0.0f } }
+	}};
+
+	std::array<unsigned int, 36> cubeIdxs = {{ 
+		0, 2, 1, 0, 3, 2, // Right
+		4, 5, 6, 4, 6, 7, // Left
+		0, 7, 3, 0, 4, 7, // Top
+		1, 6, 2, 1, 5, 6, // Bottom
+		0, 5, 1, 0, 4, 5, // Front
+		3, 7, 6, 3, 6, 2  // Back
+	}};
+
+	// Vertex buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vertBufferID);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * cubeVerts.size(), cubeVerts.data(), glSTATIC_DRAW);
+	glEnableVertexAttribArray(0); // Matches layout (location = 0)
+	glVertexAttribPointer(0, 3, glFLOAT, glFALSE_, sizeof(Vert), 0);
+	glEnableVertexAttribArray(1); // Matches layout (location = 1)
+	glVertexAttribPointer(1, 2, glFLOAT, glFALSE_, sizeof(Vert), (GLvoid*)sizeof(Vec3));
+
+	// Index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * cubeIdxs.size(), cubeIdxs.data(), glSTATIC_DRAW);
+	glBindVertexArray(0);
 	//start endless loop
     while(true)
     {
@@ -592,48 +635,47 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
             {
                 break;
             }
-            
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
         else
         {
 #pragma region CameraMovement
-			
-			float pitch = ::X39::Singletons::GameCamera::getInstance().getPitch();
-			float yaw = ::X39::Singletons::GameCamera::getInstance().getYaw();
-			float modificator = 0.1;
+			::glm::vec3 vec = ::X39::Singletons::GameCamera::getInstance().getPos();
+			float pitch = (float)::X39::Singletons::GameCamera::getInstance().getPitch();
+			float yaw = (float)::X39::Singletons::GameCamera::getInstance().getYaw();
+			float modificator = 0.1F;
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LShift))
 				modificator = 1;
-			static ::glm::vec3 vec;
+
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_W))
 			{
-				float rPitch = pitch / 180 * PIconst;
-				float rYaw = yaw / 180 * PIconst;
+				float rPitch = pitch / 180 * (float)PIconst;
+				float rYaw = yaw / 180 * (float)PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_A))
 			{
-				float rPitch = 90.0 / 180 * PIconst;
-				float rYaw = (yaw - 90) / 180 * PIconst;
+				float rPitch = 90.0F / 180 * (float)PIconst;
+				float rYaw = (yaw - 90) / 180 * (float)PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_S))
 			{
-				float rPitch = pitch / 180 * PIconst;
-				float rYaw = yaw / 180 * PIconst;
+				float rPitch = pitch / 180 * (float)PIconst;
+				float rYaw = yaw / 180 * (float)PIconst;
 				vec.x -= (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y -= (cos(rPitch)) * modificator;
 				vec.z -= (sin(rYaw) * sin(rPitch)) * modificator;
 			}
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_D))
 			{
-				float rPitch = 90.0 / 180 * PIconst;
-				float rYaw = (yaw + 90) / 180 * PIconst;
+				float rPitch = 90.0F / 180 * (float)PIconst;
+				float rYaw = (yaw + 90) / 180 * (float)PIconst;
 				vec.x += (cos(rYaw) * sin(rPitch)) * modificator;
 				vec.y += (cos(rPitch)) * modificator;
 				vec.z += (sin(rYaw) * sin(rPitch)) * modificator;
@@ -648,67 +690,92 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			}
 			::X39::Singletons::GameCamera::getInstance().setPos(vec);
 #pragma endregion
-			glClearColor( 0, 0, 0, 0 );
-			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+			glClearColor(0, 0, 0, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glMatrixMode(GL_MODELVIEW);
+			//glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
 			glViewport(0, 0, ::X39::GlobalObject::getInstance().render_width, ::X39::GlobalObject::getInstance().render_height);
-			gluPerspective(45.0,(float)::X39::GlobalObject::getInstance().render_width/(float)::X39::GlobalObject::getInstance().render_height, 1, 10000);
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL);
 			glShadeModel(GL_SMOOTH);
 			glEnable(GL_TEXTURE_COORD_ARRAY);
 			//glEnable(GL_CULL_FACE);
-			glFrontFace(GL_CCW);
-			glCullFace(GL_BACK);
-			glEnable(GL_BLEND);
+			//glFrontFace(GL_CCW);
+			//glCullFace(GL_BACK);
+			//glEnable(GL_BLEND);
 			glEnable (GL_POINT_SMOOTH);
 			glEnable (GL_LINE_SMOOTH);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			//http://wiki.delphigl.com/index.php/glBlendFunc for different examples
+			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-			X39::Singletons::GameCamera::getInstance().invokeGluLookAt();
+			glm::mat4 viewMatrix = X39::Singletons::GameCamera::getInstance().invokeGluLookAt();
+			//glm::mat4 porjectionMatrix = glm::perspective((float)45.0,(float)::X39::GlobalObject::getInstance().render_width/(float)::X39::GlobalObject::getInstance().render_height, (float)1, (float)10000);
+			glm::mat4 porjectionMatrix = glm::perspective(45.0f, (float)::X39::GlobalObject::getInstance().render_width/(float)::X39::GlobalObject::getInstance().render_height, 0.1f, 100.0f);
+			GLdouble projection[16];
+			glGetDoublev(GL_PROJECTION_MATRIX, projection);
 			glPushMatrix();
-			::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(4));
+			::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0));
+			shad.use();
 			for(int i = 0; i < 100; i++)
 			{
 				for(int j = 0; j < 100; j++)
 				{
-					glTranslated(1, 0, 0);
-					glBegin(GL_QUADS);
-						glTexCoord2f(0, 0);	glVertex3f(0, 0, 0);
-						glTexCoord2f(1,	0);	glVertex3f(1, 0, 0);
-						glTexCoord2f(1,	1);	glVertex3f(1, 0, 1);
-						glTexCoord2f(0, 1);	glVertex3f(0, 0, 1);
-					glEnd();
+					//glPushMatrix();
+					//glTranslated(i - X39::Singletons::GameCamera::getInstance().getPos().x, 0 - X39::Singletons::GameCamera::getInstance().getPos().y, j - X39::Singletons::GameCamera::getInstance().getPos().z);
+					//shad.setUniformMatrix4fv(
+					//	"modelMatrix",
+					//	1,
+					//	GL_FALSE,
+					//	&glm::mat4( (float)i - X39::Singletons::GameCamera::getInstance().getPos().x, 
+					//				(float)0 - X39::Singletons::GameCamera::getInstance().getPos().y,
+					//				(float)j - X39::Singletons::GameCamera::getInstance().getPos().z,
+					//				(float)1)[0][0],
+					//	-1
+					//);
+					shad.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, &glm::mat4()[0][0], -1);
+					shad.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, &viewMatrix[0][0], -1);
+					shad.setUniformMatrix4fv("projectionMatrix", 1, GL_FALSE, &porjectionMatrix[0][0], -1);
+					//shad.setUniformMatrix4fv("matrix", 1, GL_FALSE, &(porjectionMatrix * viewMatrix * glm::mat4(1.0f))[0][0], -1);
+					//glBegin(GL_QUADS);
+					//	glTexCoord2f(0, 1);	glVertex3f(0, 0, 100);
+					//	glTexCoord2f(1,	1);	glVertex3f(100, 0, 100);
+					//	glTexCoord2f(1,	0);	glVertex3f(100, 0, 0);
+					//	glTexCoord2f(0, 0);	glVertex3f(0, 0, 0);
+					//glEnd();
+					glBindVertexArray(vaoID);
+					glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+					glBindVertexArray(0);
+					//glPopMatrix();
 				}
-				glTranslated(-100, 0, 1);
 			}
+			shad.unuse();
 			glPopMatrix();
 
 			//2D projection
-			glMatrixMode(GL_PROJECTION);
+			//glMatrixMode(GL_PROJECTION);
 			glPushMatrix();
 			glLoadIdentity();
 			glOrtho(0.0, ::X39::GlobalObject::getInstance().render_width, ::X39::GlobalObject::getInstance().render_height, 0.0, -1.0, 10.0);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glDisable(GL_CULL_FACE);
+			glClear(GL_DEPTH_BUFFER_BIT);
 			glm::vec3 camView = ::X39::Singletons::GameCamera::getInstance().getViewVec();
 			glm::vec3 camPos = ::X39::Singletons::GameCamera::getInstance().getPos();
 			char s[256];
 			sprintf(s, "POS: %lf, %lf, %lf\nVIEW: %lf, %lf, %lf", camPos.x, camPos.y, camPos.z, camView.x, camView.y, camView.z);
-//			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(3), s, 1, 0, 0);
-
-			::X39::GlobalObject::getInstance().mainDisplay->draw();
-
-			glMatrixMode(GL_PROJECTION);
+			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1, 0, 0);
+			
+			//::X39::GlobalObject::getInstance().mainDisplay->draw();
+			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), "a-_.", 3, 0, 0);
+			//glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
-			glMatrixMode(GL_MODELVIEW);
+			//glMatrixMode(GL_MODELVIEW);
 
-			SwapBuffers(::X39::GlobalObject::getInstance().windowDisplayContext);
+			SwapBuffers(::X39::GlobalObject::getInstance().handleDeviceContext);
 			CheckForOpenGLErrors();
         }
 		frameTime = omp_get_wtime() - frameTime;

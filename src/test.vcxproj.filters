@@ -114,6 +114,15 @@
     <ClCompile Include="DCTextBox.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\internal\CommandHandler\CommandHandler.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="startPoint.h">
@@ -774,6 +783,15 @@
       <Filter>Headerdateien\GUI</Filter>
     </ClInclude>
     <ClInclude Include="DCTextBox.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\internal\CommandHandler\CommandHandler.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
