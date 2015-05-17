@@ -1,11 +1,2 @@
-shader
-{
-	vertexShader
-	{
-		relativePath = "base.vert"
-	}
-	fragmentShader
-	{
-		relativePath = "base.frag"
-	}
-}
+vertexShader(path = "base.vert");
+fragmentShader(path = "base.frag");

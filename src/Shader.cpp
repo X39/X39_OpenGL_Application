@@ -1,11 +1,12 @@
 ﻿#include "Shader.h"
 #include "globals.h"
-#include "dotX39\SettingsDocument.h"
-#include "dotX39\ISettingsFileHandler.h"
+#include <dotX39\DocumentReader.h>
+#include <dotX39\DataString.h>
 #include "CommandHandler\CommandHandler.h"
 
 #include <iostream>
 
+using namespace dotX39;
 namespace X39
 {
 	Shader::Shader(void)
@@ -18,42 +19,66 @@ namespace X39
 
 	bool Shader::load(std::string path)
 	{
-		ISettingsFileHandler fh = ISettingsFileHandler(path.c_str());
-		SettingsDocument* sd = fh.load();
-		
+		//ToDo: add attribute definition to .shad files again
+		//Some old code:
+		//	for(unsigned int layer1Index = 0; layer1Index < layer1.boundOptions.size(); layer1Index++)
+		//	{
+		//		SettingsOption opt = *(layer1.boundOptions[layer1Index]);
+		//		if(strcmp(opt.getName(), "attributes") == 0)
+		//		{
+		//			double d = 0;
+		//			if(!::CommandHandler::convAsciiCharToDouble(opt.getValue(), &d))
+		//			{
+		//				LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(name.getValue())).append("'.").append(" Please check '").append(opt.getName()).append("'. Cannot read vertexShader file"));
+		//				fileStream.close();
+		//				return false;
+		//			}
+		//			vertexShaderAttributeLocations.push_back((unsigned int)d);
+		//		}
+		//	}
 		std::string dir = path.substr(0, path.find_last_of("/\\"));
-
-		char buffer[256];
-		memset(buffer, 0, sizeof(buffer));
-		if(sd == NULL)
+		Node* root;
+		try
 		{
-			LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', cannot parse file"));
+			root = new Node("root");
+			DocumentReader::readDocument(path.c_str(), root);
+		}
+		catch (std::exception ex)
+		{
+			LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("': ").append(ex.what));
 			return false;
 		}
-		SettingsNode root = *(sd->getRootNode());
-		for(unsigned int rootIndex = 0; rootIndex < root.childs.size(); rootIndex++)
+		char buffer[256]; memset(buffer, 0, sizeof(buffer));
+		for (unsigned int rootNodeIndex = 0; rootNodeIndex < root->getNodeCount(); rootNodeIndex++)
 		{
-			SettingsNode layer1 = *(root.childs[rootIndex]);
-			if(layer1.boundOptions.size() <= 0 || layer1.boundOptions.size() > 1)
+			const Node* layer1 = root->getNode(rootNodeIndex);
+			if(layer1->getName().compare("vertexShader") == 0)
 			{
-				LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', ").append(layer1.getName()).append(" has either no name option or more then one option"));
-				return false;
-			}
-			SettingsOption name = *(layer1.boundOptions[0]);
-			if(strcmp(name.getName(), "relativePath") != 0)
-			{
-				LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', ").append(layer1.getName()).append(" path option is not named 'relativePath'"));
-				return false;
-			}
-
-			if(strcmp(layer1.getName(), "vertexShader") == 0)
-			{
+				std::string shaderPath;
+				for (unsigned int layer1ArgumentIndex = 0; layer1ArgumentIndex < layer1->getArgumentCount(); layer1ArgumentIndex++)
+				{
+					const Data* argument = layer1->getArgument(layer1ArgumentIndex);
+					if (argument->getName().compare("path") == 0)
+					{
+						if (argument->getType() != DataTypes::STRING)
+						{
+							LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' has invalid type for '").append(argument->getName()).append("'! Expected STRING."));
+							return false;
+						}
+						shaderPath = ((DataString*)argument)->getDataAsString();
+					}
+				}
+				if (shaderPath.empty())
+				{
+					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' is missing shader path argument."));
+					return false;
+				}
 				std::fstream fileStream;
-				fileStream.open(std::string(dir).append("\\").append(name.getValue()), std::fstream::in);
+				fileStream.open(std::string(dir).append("\\").append(shaderPath), std::fstream::in);
 				
 				if(fileStream.fail())
 				{
-					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(name.getValue())).append("', cannot read vertexShader file"));
+					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(shaderPath)).append("', cannot read '").append(layer1->getName()).append("' file"));
 					fileStream.close();
 					return false;
 				}
@@ -64,33 +89,38 @@ namespace X39
 					memset(buffer, 0, sizeof(buffer));
 				}
 				fileStream.close();
-				for(unsigned int layer1Index = 0; layer1Index < layer1.boundOptions.size(); layer1Index++)
+			}
+			else if (layer1->getName().compare("fragmentShader") == 0)
+			{
+				std::string shaderPath;
+				for (unsigned int layer1ArgumentIndex = 0; layer1ArgumentIndex < layer1->getArgumentCount(); layer1ArgumentIndex++)
 				{
-					SettingsOption opt = *(layer1.boundOptions[layer1Index]);
-					if(strcmp(opt.getName(), "attributes") == 0)
+					const Data* argument = layer1->getArgument(layer1ArgumentIndex);
+					if (argument->getName().compare("path") == 0)
 					{
-						double d = 0;
-						if(!::CommandHandler::convAsciiCharToDouble(opt.getValue(), &d))
+						if (argument->getType() != DataTypes::STRING)
 						{
-							LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(name.getValue())).append("'.").append(" Please check '").append(opt.getName()).append("'. Cannot read vertexShader file"));
-							fileStream.close();
+							LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' has invalid type for '").append(argument->getName()).append("'! Expected STRING."));
 							return false;
 						}
-						vertexShaderAttributeLocations.push_back((unsigned int)d);
+						shaderPath = ((DataString*)argument)->getDataAsString();
 					}
 				}
-			}
-			else if(strcmp(layer1.getName(), "fragmentShader") == 0)
-			{
-				std::fstream fileStream;
-				fileStream.open(std::string(dir).append("\\").append(name.getValue()), std::fstream::in);
-				if(fileStream.fail())
+				if (shaderPath.empty())
 				{
-					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(name.getValue())).append("', cannot read vertexShader file"));
+					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' is missing shader path argument."));
+					return false;
+				}
+				std::fstream fileStream;
+				fileStream.open(std::string(dir).append("\\").append(shaderPath), std::fstream::in);
+
+				if (fileStream.fail())
+				{
+					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(shaderPath)).append("', cannot read '").append(layer1->getName()).append("' file"));
 					fileStream.close();
 					return false;
 				}
-				while(!fileStream.eof())
+				while (!fileStream.eof())
 				{
 					fileStream.read(buffer, 255);
 					fragmentShaderSource.append(buffer);
