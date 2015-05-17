@@ -587,7 +587,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	//::X39::Singletons::GameCamera::getInstance().setPos(glm::vec3(-3.5397613, 6.5228815, -3.5409057));
 	GLuint vaoID;
 	glGenVertexArrays(1, &vaoID);
-	glBindVertexArray(vaoID)
+	glBindVertexArray(vaoID);
 
 	GLuint vertBufferID, indexBufferID;
 	glGenBuffers(1, &vertBufferID);
@@ -615,15 +615,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 
 	// Vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * cubeVerts.size(), cubeVerts.data(), glSTATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * cubeVerts.size(), cubeVerts.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0); // Matches layout (location = 0)
-	glVertexAttribPointer(0, 3, glFLOAT, glFALSE_, sizeof(Vert), 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), 0);
 	glEnableVertexAttribArray(1); // Matches layout (location = 1)
-	glVertexAttribPointer(1, 2, glFLOAT, glFALSE_, sizeof(Vert), (GLvoid*)sizeof(Vec3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (GLvoid*)sizeof(Vec3));
 
 	// Index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * cubeIdxs.size(), cubeIdxs.data(), glSTATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * cubeIdxs.size(), cubeIdxs.data(), GL_STATIC_DRAW);
 	glBindVertexArray(0);
 	//start endless loop
     while(true)
