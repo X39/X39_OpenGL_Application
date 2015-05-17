@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 /*
-** Copyright (c) 2013 The Khronos Group Inc.
+** Copyright (c) 2013-2014 The Khronos Group Inc.
 **
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
@@ -33,7 +33,7 @@ extern "C" {
 ** used to make the header, and the header can be found at
 **   http://www.opengl.org/registry/
 **
-** Khronos $Revision$ on $Date$
+** Khronos $Revision: 30969 $ on $Date: 2015-04-28 21:32:44 -0700 (Tue, 28 Apr 2015) $
 */
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
@@ -41,7 +41,7 @@ extern "C" {
 #include <windows.h>
 #endif
 
-#define WGL_WGLEXT_VERSION 20130819
+#define WGL_WGLEXT_VERSION 20150428
 
 /* Generated C header for:
  * API: wgl
@@ -69,6 +69,13 @@ BOOL WINAPI wglSaveBufferRegionARB (HANDLE hRegion, int x, int y, int width, int
 BOOL WINAPI wglRestoreBufferRegionARB (HANDLE hRegion, int x, int y, int width, int height, int xSrc, int ySrc);
 #endif
 #endif /* WGL_ARB_buffer_region */
+
+#ifndef WGL_ARB_context_flush_control
+#define WGL_ARB_context_flush_control 1
+#define WGL_CONTEXT_RELEASE_BEHAVIOR_ARB  0x2097
+#define WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB 0
+#define WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB 0x2098
+#endif /* WGL_ARB_context_flush_control */
 
 #ifndef WGL_ARB_create_context
 #define WGL_ARB_create_context 1
