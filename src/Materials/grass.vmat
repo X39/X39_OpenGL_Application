@@ -1,18 +1,13 @@
-vmat
+info
 {
-	info
+	name = "grass texture";
+	author = "Unknown";
+	version = "1.0";
+}
+textures
+{
+	texture01(type = 1)
 	{
-		name="grass texture"
-		author=""
-		version=""
-		someOtherInfo="blabla"
-	}
-	textures
-	{
-		texture01
-		{
-			relativePath="grass.tga"
-			type="1"
-		}
+		relativePath = "grass.tga";
 	}
 }

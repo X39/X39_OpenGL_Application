@@ -1,23 +1,17 @@
-vmat
+info
 {
-	info
+	name = "Button_Base";
+	author = "X39";
+	version = "1.0";
+}
+textures
+{
+	texture01(type = 1)
 	{
-		name="Button_Base"
-		author="X39"
-		version="1.0"
-		someOtherInfo=""
+		relativePath = "button.tga";
 	}
-	textures
+	texture02(type = 1)
 	{
-		texture01
-		{
-			relativePath="button.tga"
-			type="1"
-		}
-		texture02
-		{
-			relativePath="textbox.tga"
-			type="1"
-		}
+		relativePath = "textbox.tga";
 	}
 }
