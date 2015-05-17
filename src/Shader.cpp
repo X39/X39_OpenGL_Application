@@ -46,6 +46,7 @@ namespace X39
 		catch (std::exception ex)
 		{
 			LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("': ").append(ex.what));
+			delete root;
 			return false;
 		}
 		char buffer[256]; memset(buffer, 0, sizeof(buffer));
@@ -63,6 +64,7 @@ namespace X39
 						if (argument->getType() != DataTypes::STRING)
 						{
 							LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' has invalid type for '").append(argument->getName()).append("'! Expected STRING."));
+							delete root;
 							return false;
 						}
 						shaderPath = ((DataString*)argument)->getDataAsString();
@@ -71,6 +73,7 @@ namespace X39
 				if (shaderPath.empty())
 				{
 					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' is missing shader path argument."));
+					delete root;
 					return false;
 				}
 				std::fstream fileStream;
@@ -80,6 +83,7 @@ namespace X39
 				{
 					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(shaderPath)).append("', cannot read '").append(layer1->getName()).append("' file"));
 					fileStream.close();
+					delete root;
 					return false;
 				}
 				while(!fileStream.eof())
@@ -101,6 +105,7 @@ namespace X39
 						if (argument->getType() != DataTypes::STRING)
 						{
 							LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' has invalid type for '").append(argument->getName()).append("'! Expected STRING."));
+							delete root;
 							return false;
 						}
 						shaderPath = ((DataString*)argument)->getDataAsString();
@@ -109,6 +114,7 @@ namespace X39
 				if (shaderPath.empty())
 				{
 					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', '").append(layer1->getName()).append("' is missing shader path argument."));
+					delete root;
 					return false;
 				}
 				std::fstream fileStream;
@@ -118,6 +124,7 @@ namespace X39
 				{
 					LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(std::string(dir).append("\\").append(shaderPath)).append("', cannot read '").append(layer1->getName()).append("' file"));
 					fileStream.close();
+					delete root;
 					return false;
 				}
 				while (!fileStream.eof())
@@ -129,6 +136,7 @@ namespace X39
 				fileStream.close();
 			}
 		}
+		delete root;
 		return true;
 	}
 	bool Shader::compile(void)
