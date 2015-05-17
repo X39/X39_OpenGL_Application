@@ -18,6 +18,7 @@ namespace X39
 		typedef struct stTexture
 		{
 			std::string subname;
+			std::string path;
 			unsigned int type;
 			long width;
 			long height;
@@ -50,7 +51,7 @@ namespace X39
 				~MaterialManager(void);
 				static MaterialManager& getInstance(void);
 				
-				MATERIAL* registerTexture(char* vmatPath);
+				MATERIAL* registerTexture(std::string& vmatPath);
 				void unregisterTexture(MATERIAL* mat);
 				MATERIAL* createMaterial();
 				

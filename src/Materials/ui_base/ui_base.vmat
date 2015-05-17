@@ -6,12 +6,6 @@ info
 }
 textures
 {
-	texture01(type = 1)
-	{
-		relativePath = "button.tga";
-	}
-	texture02(type = 1)
-	{
-		relativePath = "textbox.tga";
-	}
+	texture01(type = 1, path = "button.tga");
+	texture02(type = 1, path = "textbox.tga");
 }

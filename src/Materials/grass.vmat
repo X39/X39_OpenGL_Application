@@ -6,8 +6,5 @@ info
 }
 textures
 {
-	texture01(type = 1)
-	{
-		relativePath = "grass.tga";
-	}
+	texture01(type = 1, path = "grass.tga");
 }

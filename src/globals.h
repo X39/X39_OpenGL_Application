@@ -28,6 +28,7 @@
 //#define ENABLE_LOGGER_ToFile 1		//Enable logging to log.txt
 
 
+#define STRINGIFY(DEF) #DEF
 
 #define strEndsWith(STRFULL, STREND) STRFULL.compare(STRFULL.length() - strlen(STREND), strlen(STREND), STREND) == 0
 

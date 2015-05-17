@@ -1,7 +1,8 @@
 #include "globals.h"
 #include "tgaLoader\tga.h"
-#include "dotX39\SettingsDocument.h"
-#include "dotX39\ISettingsFileHandler.h"
+#include <dotX39\DocumentReader.h>
+#include <dotX39\DataString.h>
+#include <dotX39\DataScalar.h>
 #include "CommandHandler\CommandHandler.h"
 
 #include <vector>
@@ -10,7 +11,7 @@
 #include "MaterialManager.h"
 
 
-
+using namespace dotX39;
 namespace X39
 {
 	namespace Singletons
@@ -29,65 +30,78 @@ namespace X39
 			return instance;
 		}
 
-		MATERIAL* MaterialManager::registerTexture(char* vmatPath)
+		MATERIAL* MaterialManager::registerTexture(std::string& vmatPath)
 		{
-			ISettingsFileHandler fh = ISettingsFileHandler(vmatPath);
-			SettingsDocument* sd = fh.load();
-			if(sd == NULL)
+			Node* root;
+			try
 			{
-				LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("', cannot parse file"));
-				return NULL;
+				root = new Node("root");
+				DocumentReader::readDocument(vmatPath.c_str(), root);
 			}
-			SettingsNode root = *(sd->getRootNode());
+			catch (std::exception ex)
+			{
+				LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("': ").append(ex.what));
+				delete root;
+				return false;
+			}
 
 			MATERIAL* mat = new MATERIAL();
 			mat->vmatPath = std::string(vmatPath);
 			std::string vmatDir = mat->vmatPath.substr(0, mat->vmatPath.find_last_of("/\\"));
 			LOGGER_WRITE(::Logger::INFOImportant, std::string("Parsing vmat '").append(vmatPath).append("'"));
-			for(unsigned int i = 0; i < root.childs.size(); i++)
+			for (unsigned int rootNodeIndex = 0; rootNodeIndex < root->getNodeCount(); rootNodeIndex++)
 			{
-				SettingsNode node = *(root.childs[i]);
-				if(strcmp(node.getName(), "textures") == 0)
+				const Node* layer1 = root->getNode(rootNodeIndex);
+				//SettingsNode node = *(root.childs[i]);
+				if (layer1->getName().compare("textures") == 0)
 				{
-					for(unsigned int j = 0; j < node.childs.size(); j++)
+					for (unsigned int layer1NodeIndex = 0; layer1NodeIndex < layer1->getDataCount(); layer1NodeIndex++)
 					{
-						SettingsNode textureNode = *(node.childs[j]);
-						std::string relativePath;
-						std::string type;
-						for(unsigned int k = 0; k < textureNode.boundOptions.size(); k++)
-						{
-							SettingsOption opt = *(textureNode.boundOptions[k]);
-							if(strcmp(opt.getName(), "relativePath") == 0)
-								relativePath = (char*) opt.getValue();
-							else if(strcmp(opt.getName(), "type") == 0)
-								type = (char*) opt.getValue();
-						}
+						const Node* layer2 = layer1->getNode(layer1NodeIndex);
 						TEXTURE* texture = new TEXTURE();
-						texture->subname = textureNode.getName();
-						texture->type = CommandHandler::convAsciiCharToDouble(type.c_str(), -1);
-						if(texture->type == -1)
+						texture->subname = layer2->getName();
+						for (unsigned int layer2ArgumentIndex = 0; layer2ArgumentIndex < layer2->getArgumentCount(); layer2ArgumentIndex++)
 						{
-							LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("', cannot read type '").append(type).append("' of texture '").append(textureNode.getName()).append("', setting to TEXTURE_DEFAULT"));
+							const Data* argument = layer2->getArgument(layer2ArgumentIndex);
+							if (argument->getName().compare("path") == 0)
+							{
+								if (argument->getType() != DataTypes::STRING)
+								{
+									LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("', '").append(layer1->getName()).append("/").append(layer2->getName()).append("' has invalid type for '").append(argument->getName()).append("'! Expected STRING."));
+									delete root;
+									delete texture;
+									return false;
+								}
+								texture->path = std::string(vmatDir).append("/").append(((DataString*)argument)->getDataAsString());
+							}
+							else if (argument->getName().compare("type") == 0)
+							{
+								if (argument->getType() != DataTypes::SCALAR)
+								{
+									LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("', '").append(layer1->getName()).append("/").append(layer2->getName()).append("' has invalid type for '").append(argument->getName()).append("'! Expected SCALAR."));
+									delete root;
+									delete texture;
+									return false;
+								}
+								texture->type = (unsigned int)((DataScalar*)argument)->getDataAsLongDouble();
+							}
+						}
+						if (texture->type == TEXTURE_NA)
+						{
+							LOGGER_WRITE(::Logger::WARNING, std::string("\tType TEXTURE_NA(").append(STRINGIFY(TEXTURE_NA)).append(") for texture '").append(layer2->getName()).append("' is invalid, setting to TEXTURE_DEFAULT(").append(STRINGIFY(TEXTURE_DEFAULT)).append(")"));
 							texture->type = TEXTURE_DEFAULT;
 						}
 						switch(texture->type)
 						{
-							case TEXTURE_NA:
-								LOGGER_WRITE(::Logger::WARNING, std::string("\twhile parsing '").append(vmatPath).append("', found  TEXTURE_NA on texture '").append(textureNode.getName()).append("', skipping"));
-								delete texture;
-								continue;
-							break;
-							case TEXTURE_DEFAULT:
-							case TEXTURE_BASE:
-							case TEXTURE_NORMAL:
-								LOGGER_WRITE(::Logger::INFO, std::string("\ttrying to read image file"));
+							case TEXTURE_DEFAULT: case TEXTURE_BASE: case TEXTURE_NORMAL:
+								LOGGER_WRITE(::Logger::DEBUG, std::string("\ttrying to read image file"));
 
-								if(strEndsWith(relativePath, ".tga"))
+								if (strEndsWith(texture->path, ".tga"))
 								{
 									tTGA tgaFile;
-									if(load_TGA(&tgaFile, std::string(vmatDir).append("/").append(relativePath).c_str()) == FALSE)
+									if (load_TGA(&tgaFile, texture->path.c_str()) == FALSE)
 									{
-										LOGGER_WRITE(::Logger::ERRORmsg, std::string("\tfailed to load TGA '").append(vmatDir).append("/").append(relativePath).append("', skipping"));
+										LOGGER_WRITE(::Logger::ERRORmsg, std::string("\tfailed to load TGA '").append(texture->path).append("', skipping"));
 										delete texture;
 										continue;
 									}
@@ -100,25 +114,32 @@ namespace X39
 								}
 								else
 								{
-									LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("', texture '").append(textureNode.getName()).append("'has unknown file extension, skipping"));
+									LOGGER_WRITE(::Logger::WARNING, std::string("\tWhile parsing '").append(vmatPath).append("', texture '").append(layer2->getName()).append("'has unknown file extension, skipping"));
 									delete texture;
 									continue;
 								}
 							break;
 						}
-
-						
 						mat->textures.push_back(texture);
 						mat->gpuTextures.push_back(0);
 					}
 				}
-				else if(strcmp(node.getName(), "info") == 0)
+				else if (layer1->getName().compare("info") == 0)
 				{
-					for(unsigned int j = 0; j < node.boundOptions.size(); j++)
+					for (unsigned int layer1DataIndex = 0; layer1DataIndex < layer1->getDataCount(); layer1DataIndex++)
 					{
-						SettingsOption opt = *(node.boundOptions[j]);
-						mat->informationValue.push_back(opt.getValue());
-						mat->informationTitle.push_back(opt.getName());
+						const Data* data = layer1->getData(layer1DataIndex);
+						switch (data->getType())
+						{
+						case DataTypes::STRING:
+								mat->informationValue.push_back(((DataString*)data)->getDataAsString());
+								mat->informationTitle.push_back(data->getName());
+								LOGGER_WRITE(::Logger::DEBUG, std::string("\t").append("Added '").append(layer1->getName()).append("/").append(data->getName()).append("' with content '").append(((DataString*)data)->getDataAsString()).append("' to MATERIAL info array"));
+								break;
+						default:
+							LOGGER_WRITE(::Logger::WARNING, std::string("\t'").append(vmatPath).append("' hit unexpected datatype on '").append(layer1->getName()).append("/").append(data->getName()).append("'"));
+							break;
+						}
 					}
 				}
 				//for(unsigned int j = 0; j < node.boundOptions.size(); j++)
@@ -167,7 +188,7 @@ namespace X39
 				//}
 			}
 			this->matList.push_back(mat);
-			delete sd;
+			delete root;
 			return mat;
 		}
 
