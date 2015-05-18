@@ -182,7 +182,7 @@
 				else
 				{
 					//use 10^I * X to get the final result
-					i += currentHandleNumber * pow((double)10, (int)(numberLength - index));
+					i += (long)(currentHandleNumber * pow((double)10, (int)(numberLength - index)));
 				}
 			}
 			//If we had a dot, we will now shift our results comma
