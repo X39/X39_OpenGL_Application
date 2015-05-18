@@ -5,10 +5,11 @@ namespace X39
 {
 	namespace GUI
 	{
-		DCButton::DCButton(double x, double y, double w, double h, void (*callback)(void), std::string& displayedText) : DisplayBase(x, y, w, h)
+		DCButton::DCButton(double x, double y, double w, double h, void(*callback)(void), std::string& displayedText, ::X39::Singletons::MATERIAL& mat, unsigned int textureIndex) : DisplayBase(x, y, w, h), material(mat)
 		{
-			callbackFunction = callback;
-			displayText = displayedText;
+			this->callbackFunction = callback;
+			this->displayText = displayedText;
+			this->textureIndex = textureIndex;
 		}
 
 		DCButton::~DCButton(void)
@@ -18,7 +19,7 @@ namespace X39
 
 		void DCButton::e_draw()
 		{
-			::X39::Singletons::MATERIAL* mat = ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(1);
+			::X39::Singletons::MATERIAL* mat = &this->material;
 			int textureIndex = 0;
 			if(width < 16 || height < 16)
 			{

@@ -14,9 +14,11 @@ namespace X39
 			private:
 				void (*callbackFunction)(void);
 				std::string displayText;
+				::X39::Singletons::MATERIAL& material;
+				unsigned int textureIndex;
 
 			public:
-				DCButton(double x, double y, double w, double h, void (*callback)(void), std::string& displayedText);
+				DCButton(double x, double y, double w, double h, void(*callback)(void), std::string& displayedText, ::X39::Singletons::MATERIAL& mat, unsigned int textureIndex = 0);
 				~DCButton(void);
 
 				virtual void e_draw(void);
