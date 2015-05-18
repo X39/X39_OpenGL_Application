@@ -78,7 +78,7 @@ namespace X39
 			{
 				//printf("%i", invertPitch);
 				double yawModificator = posX * SENSITIVY;
-				double pitchModificator = posY * SENSITIVY;
+				double pitchModificator = -posY * SENSITIVY;
 				if(yawModificator > 10)
 				{
 					yawModificator = 10;
