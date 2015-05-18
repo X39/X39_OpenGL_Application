@@ -79,11 +79,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include\external;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\externalSpecial\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;freetype255.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;freetype255.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -94,7 +95,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include\external;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\externalSpecial\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -102,7 +103,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;freetype255.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;freetype255.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -112,7 +113,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include\external;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\externalSpecial\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -120,7 +121,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>glew32.lib;glew32s.lib;freetype255.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32s.lib;freetype255.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)..\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -128,20 +129,13 @@
     <ClCompile Include="..\include\external\glm\core\dummy.cpp" />
     <ClCompile Include="..\include\external\tgaLoader\tga.c" />
     <ClCompile Include="..\include\internal\CommandHandler\CommandHandler.cpp" />
-    <ClCompile Include="..\include\internal\dotX39\SettingsDocument.cpp" />
-    <ClCompile Include="..\include\internal\dotX39\SettingsFileHandler_1_0.cpp" />
-    <ClCompile Include="..\include\internal\dotX39\SettingsNode.cpp" />
-    <ClCompile Include="..\include\internal\dotX39\SettingsOption.cpp" />
-    <ClCompile Include="..\include\internal\dotX39\SOFTUO_SettingsNodeCollection.cpp" />
+    <ClCompile Include="..\include\internal\dotX39\DocumentReader.cpp" />
+    <ClCompile Include="..\include\internal\dotX39\DocumentWriter.cpp" />
+    <ClCompile Include="..\include\internal\dotX39\Node.cpp" />
     <ClCompile Include="ConsoleStream.cpp" />
     <ClCompile Include="DCButton.cpp" />
     <ClCompile Include="DCTextBox.cpp" />
     <ClCompile Include="DisplayBase.cpp" />
-    <ClCompile Include="dotX39\SettingsDocument.cpp" />
-    <ClCompile Include="dotX39\SettingsFileHandler_1_0.cpp" />
-    <ClCompile Include="dotX39\SettingsNode.cpp" />
-    <ClCompile Include="dotX39\SettingsOption.cpp" />
-    <ClCompile Include="dotX39\SOFTUO_SettingsNodeCollection.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="GameCamera.cpp" />
     <ClCompile Include="GlobalObject.cpp" />
@@ -153,7 +147,6 @@
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="startPoint.cpp" />
-    <ClCompile Include="tgaLoader\tga.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\external\glm\core\func_common.hpp" />
@@ -348,22 +341,12 @@
     <ClInclude Include="..\include\external\SDL\SDL_types.h" />
     <ClInclude Include="..\include\external\SDL\SDL_version.h" />
     <ClInclude Include="..\include\external\SDL\SDL_video.h" />
-    <ClInclude Include="..\include\external\tgaLoader\tga.h" />
     <ClInclude Include="..\include\internal\CommandHandler\CommandHandler.h" />
     <ClInclude Include="..\include\internal\dotX39\ISettingsFileHandler.h" />
-    <ClInclude Include="..\include\internal\dotX39\SettingsDocument.h" />
-    <ClInclude Include="..\include\internal\dotX39\SettingsNode.h" />
-    <ClInclude Include="..\include\internal\dotX39\SettingsOption.h" />
-    <ClInclude Include="..\include\internal\dotX39\SOFTUO_SettingsNodeCollection.h" />
     <ClInclude Include="ConsoleStream.h" />
     <ClInclude Include="DCButton.h" />
     <ClInclude Include="DCTextBox.h" />
     <ClInclude Include="DisplayBase.h" />
-    <ClInclude Include="dotX39\ISettingsFileHandler.h" />
-    <ClInclude Include="dotX39\SettingsDocument.h" />
-    <ClInclude Include="dotX39\SettingsNode.h" />
-    <ClInclude Include="dotX39\SettingsOption.h" />
-    <ClInclude Include="dotX39\SOFTUO_SettingsNodeCollection.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="GameCamera.h" />
     <ClInclude Include="GlobalObject.h" />
@@ -378,7 +361,6 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="startPoint.h" />
-    <ClInclude Include="tgaLoader\tga.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\external\glm\core\func_common.inl" />

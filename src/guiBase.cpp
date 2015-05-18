@@ -129,8 +129,8 @@ namespace X39
 			if(charCode > 255)
 				return;
 			unsigned int fontIndex = ::X39::Singletons::FontManager::getInstance().getCharTextureIndex(font, c);
-			float w = font->material->textures[fontIndex]->width;
-			float h = font->material->textures[fontIndex]->height;
+			double w = (double)font->material->textures[fontIndex]->width;
+			double h = (double)font->material->textures[fontIndex]->height;
 			drawTexture2D(font->material, fontIndex, charCode % 32 * w, charCode / 32 * h, w, h, uiPosX, uiPosY, uiWidth, uiHeight);
 		}
 		

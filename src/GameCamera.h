@@ -35,10 +35,9 @@ namespace X39
 				void setYaw(double val);
 				void setRoll(double val);
 				void setPos(::glm::vec3 val);
-				void setViewVec(::glm::vec3 val);
+				::glm::vec3 addPos(::glm::vec3 val);
 			
-				glm::mat4 invokeGluLookAt(void);
-				::glm::vec3 getViewVec(void);
+				glm::mat4 recalculateViewPort(void);
 				glm::mat4 getViewPort(void);
 				static GameCamera& getInstance(void);
 		};

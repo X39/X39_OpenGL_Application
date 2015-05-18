@@ -16,23 +16,14 @@
     <Filter Include="Include">
       <UniqueIdentifier>{bfd02bcb-b8f6-4d35-b3f3-5fbd7361db44}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Quelldateien\External">
-      <UniqueIdentifier>{debcffab-5faa-4b24-aec5-0aa2e9a90e1c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\External">
-      <UniqueIdentifier>{6e5b699d-071f-4982-93db-7fdbe20746a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Quelldateien\dotX39">
-      <UniqueIdentifier>{acd2354e-1702-4b81-a8d0-1cc98a1686f2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Headerdateien\dotX39">
-      <UniqueIdentifier>{9408eed3-3987-4627-8709-e2bb347bf59f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Quelldateien\GUI">
       <UniqueIdentifier>{9932a3f0-8e5e-484a-a4b4-ef3211215054}</UniqueIdentifier>
     </Filter>
     <Filter Include="Headerdateien\GUI">
       <UniqueIdentifier>{18552fdc-fa00-407f-9292-575a7353409a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\include">
+      <UniqueIdentifier>{e5012625-1a66-459d-9f16-7a7de1a661ee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -40,24 +31,6 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\include\external\glm\core\dummy.cpp">
-      <Filter>Include</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\external\tgaLoader\tga.c">
-      <Filter>Include</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\internal\dotX39\SettingsDocument.cpp">
-      <Filter>Include</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\internal\dotX39\SettingsFileHandler_1_0.cpp">
-      <Filter>Include</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\internal\dotX39\SettingsNode.cpp">
-      <Filter>Include</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\internal\dotX39\SettingsOption.cpp">
-      <Filter>Include</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\internal\dotX39\SOFTUO_SettingsNodeCollection.cpp">
       <Filter>Include</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
@@ -72,26 +45,8 @@
     <ClCompile Include="KeyHandler.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="tgaLoader\tga.c">
-      <Filter>Quelldateien\External</Filter>
-    </ClCompile>
     <ClCompile Include="MaterialManager.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="dotX39\SettingsDocument.cpp">
-      <Filter>Quelldateien\dotX39</Filter>
-    </ClCompile>
-    <ClCompile Include="dotX39\SettingsFileHandler_1_0.cpp">
-      <Filter>Quelldateien\dotX39</Filter>
-    </ClCompile>
-    <ClCompile Include="dotX39\SettingsNode.cpp">
-      <Filter>Quelldateien\dotX39</Filter>
-    </ClCompile>
-    <ClCompile Include="dotX39\SOFTUO_SettingsNodeCollection.cpp">
-      <Filter>Quelldateien\dotX39</Filter>
-    </ClCompile>
-    <ClCompile Include="dotX39\SettingsOption.cpp">
-      <Filter>Quelldateien\dotX39</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Quelldateien</Filter>
@@ -122,6 +77,18 @@
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\external\tgaLoader\tga.c">
+      <Filter>Quelldateien\include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\internal\dotX39\Node.cpp">
+      <Filter>Quelldateien\include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\internal\dotX39\DocumentWriter.cpp">
+      <Filter>Quelldateien\include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\internal\dotX39\DocumentReader.cpp">
+      <Filter>Quelldateien\include</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -704,22 +671,7 @@
     <ClInclude Include="..\include\external\SDL\SDL_video.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\external\tgaLoader\tga.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\internal\dotX39\ISettingsFileHandler.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\dotX39\SettingsDocument.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\dotX39\SettingsNode.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\dotX39\SettingsOption.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\internal\dotX39\SOFTUO_SettingsNodeCollection.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="globals.h">
@@ -743,26 +695,8 @@
     <ClInclude Include="KeyEventCodes.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="tgaLoader\tga.h">
-      <Filter>Headerdateien\External</Filter>
-    </ClInclude>
     <ClInclude Include="MaterialManager.h">
       <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="dotX39\SOFTUO_SettingsNodeCollection.h">
-      <Filter>Headerdateien\dotX39</Filter>
-    </ClInclude>
-    <ClInclude Include="dotX39\SettingsDocument.h">
-      <Filter>Headerdateien\dotX39</Filter>
-    </ClInclude>
-    <ClInclude Include="dotX39\SettingsNode.h">
-      <Filter>Headerdateien\dotX39</Filter>
-    </ClInclude>
-    <ClInclude Include="dotX39\SettingsOption.h">
-      <Filter>Headerdateien\dotX39</Filter>
-    </ClInclude>
-    <ClInclude Include="dotX39\ISettingsFileHandler.h">
-      <Filter>Headerdateien\dotX39</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Headerdateien</Filter>
