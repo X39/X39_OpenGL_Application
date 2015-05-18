@@ -4,6 +4,9 @@
 //---------------------------INIT HEADER---------------------------
 #ifndef _X39_Globals
 	#define _X39_Globals 1
+#ifndef GLEW_STATIC
+#define GLEW_STATIC
+#endif
 
 
 
@@ -13,7 +16,7 @@
 
 	#pragma comment(lib, "opengl32.lib")
 	#pragma comment(lib, "glu32.lib")
-	#pragma comment(lib, "glew32.lib")
+	#pragma comment(lib, "glew32s.lib")
 
 #endif
 //Define Debug macros
