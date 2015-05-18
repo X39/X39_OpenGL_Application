@@ -50,7 +50,8 @@ namespace X39
 			public:
 				~MaterialManager(void);
 				static MaterialManager& getInstance(void);
-				
+
+				MATERIAL* registerTexture(const char* vmatPath){ return registerTexture(std::string(vmatPath)); }
 				MATERIAL* registerTexture(std::string& vmatPath);
 				void unregisterTexture(MATERIAL* mat);
 				MATERIAL* createMaterial();

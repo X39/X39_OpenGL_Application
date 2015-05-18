@@ -40,7 +40,7 @@ namespace X39
 			}
 			catch (std::exception ex)
 			{
-				LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("': ").append(ex.what));
+				LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(vmatPath).append("': ").append(ex.what()));
 				delete root;
 				return false;
 			}
@@ -55,7 +55,7 @@ namespace X39
 				//SettingsNode node = *(root.childs[i]);
 				if (layer1->getName().compare("textures") == 0)
 				{
-					for (unsigned int layer1NodeIndex = 0; layer1NodeIndex < layer1->getDataCount(); layer1NodeIndex++)
+					for (unsigned int layer1NodeIndex = 0; layer1NodeIndex < layer1->getNodeCount(); layer1NodeIndex++)
 					{
 						const Node* layer2 = layer1->getNode(layer1NodeIndex);
 						TEXTURE* texture = new TEXTURE();
