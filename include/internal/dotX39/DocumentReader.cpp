@@ -18,7 +18,7 @@ using namespace std;
 #define READINGMODE_ARGUMENT_END 3
 #define READER_BUFFERSIZE 256
 #define SETREADINGMODE(MODE) setReadingMode(MODE, &readingMode, &readingMode_last)
-#define DISABLEOUTERCATCH
+//#define DISABLEOUTERCATCH
 namespace dotX39
 {
 	namespace DocumentReader
@@ -260,11 +260,12 @@ namespace dotX39
 								else if (dataType == DataTypes::BOOLEAN)
 								{
 									char* cp;
-									cp = strchr(c, ';');
+									cp = strchr(c, 'e');
 									if (cp != NULL)
 									{
+										cp++;
 										data.append(c, cp);
-										i += strlen(c) - strlen(cp);
+										i += strlen(c) - strlen(cp) - 1;
 										c = cp;
 										while ((iscntrl(c[0]) || c[0] == ' ' || c[0] == '\t') && c[0] != '\0')
 										{
@@ -334,12 +335,20 @@ namespace dotX39
 								else if (dataType == DataTypes::SCALAR)
 								{
 									char* cp;
-									cp = strchr(c, ';');
+									char* cp2 = c;
+									while (cp2[0] != '\0')
+									{
+										if (cp2[0] == '.' || (cp2[0] >= '0' && cp2[0] <= '9'))
+											cp = cp2;
+										else
+											break;
+										cp2++;
+									}
 									if (cp != NULL)
 									{
-										data.append(c, cp);
-										i += strlen(c) - strlen(cp);
-										c = cp;
+										data.append(c, cp + 1);
+										i += strlen(c) - strlen(cp + 1);
+										c = cp + 1;
 										while ((iscntrl(c[0]) || c[0] == ' ' || c[0] == '\t') && c[0] != '\0')
 										{
 											c = c + 1;
@@ -480,7 +489,7 @@ namespace dotX39
 			}
 			catch (exception e)
 			{
-				throw new exception(string("Exception '").append(e.what()).append("' on line ").append(to_string(lineNumber)).c_str());
+				throw exception(string("Exception '").append(e.what()).append("' on line ").append(to_string(lineNumber)).c_str());
 			}
 #endif
 			if (readingMode != READINGMODE_NAME)
