@@ -1,15 +1,8 @@
-shader
+vertexShader(path = "base.vert")
 {
-	vertexShader
+	attributes
 	{
-		relativePath = "base.vert"
-		attributes
-		{
-			att1 = "0"
-		}
-	}
-	fragmentShader
-	{
-		relativePath = "base.frag"
+		att1(type = 0, value = "0");
 	}
 }
+fragmentShader(path = "base.frag");
