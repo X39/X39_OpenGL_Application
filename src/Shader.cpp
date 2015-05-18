@@ -45,7 +45,7 @@ namespace X39
 		}
 		catch (std::exception ex)
 		{
-			LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("': ").append(ex.what));
+			LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("': ").append(ex.what()));
 			delete root;
 			return false;
 		}
@@ -216,7 +216,7 @@ namespace X39
 	
 	bool Shader::setUniform1f(GLchar* varname, GLfloat v0, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -232,7 +232,7 @@ namespace X39
 	}
 	bool Shader::setUniform2f(GLchar* varname, GLfloat v0, GLfloat v1, GLint index)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -248,7 +248,7 @@ namespace X39
 	}
 	bool Shader::setUniform3f(GLchar* varname, GLfloat v0, GLfloat v1, GLfloat v2, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -263,7 +263,7 @@ namespace X39
 	}
 	bool Shader::setUniform4f(GLchar* varname, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -278,7 +278,7 @@ namespace X39
 	}
 	bool Shader::setUniform1i(GLchar* varname, GLint v0, GLint index)
 	{ 
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -294,7 +294,7 @@ namespace X39
 	}
 	bool Shader::setUniform2i(GLchar* varname, GLint v0, GLint v1, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -309,7 +309,7 @@ namespace X39
 	}
 	bool Shader::setUniform3i(GLchar* varname, GLint v0, GLint v1, GLint v2, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -324,7 +324,7 @@ namespace X39
 	}
 	bool Shader::setUniform4i(GLchar* varname, GLint v0, GLint v1, GLint v2, GLint v3, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -339,7 +339,7 @@ namespace X39
 	}
 	bool Shader::setUniform1ui(GLchar* varname, GLuint v0, GLint index)
 	{ 
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -355,7 +355,7 @@ namespace X39
 	}
 	bool Shader::setUniform2ui(GLchar* varname, GLuint v0, GLuint v1, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -370,7 +370,7 @@ namespace X39
 	}
 	bool Shader::setUniform3ui(GLchar* varname, GLuint v0, GLuint v1, GLuint v2, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -385,7 +385,7 @@ namespace X39
 	}
 	bool Shader::setUniform4ui(GLchar* varname, GLuint v0, GLuint v1, GLuint v2, GLuint v3, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -400,7 +400,7 @@ namespace X39
 	}
 	bool Shader::setUniform1fv(GLchar* varname, GLsizei count, GLfloat *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -415,7 +415,7 @@ namespace X39
 	}
 	bool Shader::setUniform2fv(GLchar* varname, GLsizei count, GLfloat *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -430,7 +430,7 @@ namespace X39
 	}
 	bool Shader::setUniform3fv(GLchar* varname, GLsizei count, GLfloat *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -445,7 +445,7 @@ namespace X39
 	}
 	bool Shader::setUniform4fv(GLchar* varname, GLsizei count, GLfloat *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -460,7 +460,7 @@ namespace X39
 	}
 	bool Shader::setUniform1iv(GLchar* varname, GLsizei count, GLint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -475,7 +475,7 @@ namespace X39
 	}
 	bool Shader::setUniform2iv(GLchar* varname, GLsizei count, GLint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -490,7 +490,7 @@ namespace X39
 	}
 	bool Shader::setUniform3iv(GLchar* varname, GLsizei count, GLint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -505,7 +505,7 @@ namespace X39
 	}
 	bool Shader::setUniform4iv(GLchar* varname, GLsizei count, GLint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -520,7 +520,7 @@ namespace X39
 	}
 	bool Shader::setUniform1uiv(GLchar* varname, GLsizei count, GLuint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -535,7 +535,7 @@ namespace X39
 	}
 	bool Shader::setUniform2uiv(GLchar* varname, GLsizei count, GLuint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -550,7 +550,7 @@ namespace X39
 	}
 	bool Shader::setUniform3uiv(GLchar* varname, GLsizei count, GLuint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -565,7 +565,7 @@ namespace X39
 	}
 	bool Shader::setUniform4uiv(GLchar* varname, GLsizei count, GLuint *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -580,7 +580,7 @@ namespace X39
 	}
 	bool Shader::setUniformMatrix2fv(GLchar* varname, GLsizei count, GLboolean transpose, GLfloat *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -595,7 +595,7 @@ namespace X39
 	}
 	bool Shader::setUniformMatrix3fv(GLchar* varname, GLsizei count, GLboolean transpose, GLfloat *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -610,7 +610,7 @@ namespace X39
 	}
 	bool Shader::setUniformMatrix4fv(GLchar* varname, GLsizei count, GLboolean transpose, GLfloat *value, GLint index)
 	{
-		if (!compiled) return true;
+		if (!compiled) return false;
 		
 		GLint loc;
 		if (varname)
@@ -675,20 +675,20 @@ namespace X39
 	}
 	bool Shader::setVertexAttrib1f(GLuint index, GLfloat v0)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib1f(index, v0);
 	   return true;
 	}
 	bool Shader::setVertexAttrib2f(GLuint index, GLfloat v0, GLfloat v1)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib2f(index, v0, v1);
 	   
 	   return true;
 	}
 	bool Shader::setVertexAttrib3f(GLuint index, GLfloat v0, GLfloat v1, GLfloat v2)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   
 		glVertexAttrib3f(index, v0, v1, v2);
 		
@@ -696,7 +696,7 @@ namespace X39
 	}
 	bool Shader::setVertexAttrib4f(GLuint index, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   
 	   glVertexAttrib4f(index, v0, v1, v2, v3);
 	   
@@ -704,103 +704,103 @@ namespace X39
 	}
 	bool Shader::setVertexAttrib1d(GLuint index, GLdouble v0)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib1d(index, v0);
 	   return true;
 	}
 	bool Shader::setVertexAttrib2d(GLuint index, GLdouble v0, GLdouble v1)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib2d(index, v0, v1);
 	   return true;
 	}
 	bool Shader::setVertexAttrib3d(GLuint index, GLdouble v0, GLdouble v1, GLdouble v2)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib3d(index, v0, v1, v2);
 	   return true;
 	}
 	bool Shader::setVertexAttrib4d(GLuint index, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib4d(index, v0, v1, v2, v3);
 	   return true;
 	}
 	bool Shader::setVertexAttrib1s(GLuint index, GLshort v0)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib1s(index, v0);
 	   return true;
 	}
 	bool Shader::setVertexAttrib2s(GLuint index, GLshort v0, GLshort v1)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib2s(index, v0, v1);
 	   return true;
 	}
 	bool Shader::setVertexAttrib3s(GLuint index, GLshort v0, GLshort v1, GLshort v2)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib3s(index, v0, v1, v2);
 	   return true;
 	}
 	bool Shader::setVertexAttrib4s(GLuint index, GLshort v0, GLshort v1, GLshort v2, GLshort v3)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib4s(index, v0, v1, v2, v3);
 	   return true;
 	}
 	bool Shader::setVertexAttribNormalizedByte(GLuint index, GLbyte v0, GLbyte v1, GLbyte v2, GLbyte v3)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttrib4Nub(index, v0, v1, v2, v3);
 	   return true;
 	}
 	bool Shader::setVertexAttrib1i(GLuint index, GLint v0)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI1iEXT(index, v0);
 	   return true;
 	}
 	bool Shader::setVertexAttrib2i(GLuint index, GLint v0, GLint v1)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI2iEXT(index, v0, v1);
 	   return true;
 	}
 	bool Shader::setVertexAttrib3i(GLuint index, GLint v0, GLint v1, GLint v2)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI3iEXT(index, v0, v1, v2);
 	   return true;
 	}
 	bool Shader::setVertexAttrib4i(GLuint index, GLint v0, GLint v1, GLint v2, GLint v3)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI4iEXT(index, v0, v1, v2, v3);
 	   return true;
 	}
 	bool Shader::setVertexAttrib1ui(GLuint index, GLuint v0)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI1uiEXT(index, v0);
 	   return true;
 	}
 	bool Shader::setVertexAttrib2ui(GLuint index, GLuint v0, GLuint v1)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI2uiEXT(index, v0, v1);
 	   return true;
 	}
 	bool Shader::setVertexAttrib3ui(GLuint index, GLuint v0, GLuint v1, GLuint v2)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI3uiEXT(index, v0, v1, v2);
 	   return true;
 	}
 	bool Shader::setVertexAttrib4ui(GLuint index, GLuint v0, GLuint v1, GLuint v2, GLuint v3)
 	{
-	   if (!compiled) return true;
+	   if (!compiled) return false;
 	   glVertexAttribI4uiEXT(index, v0, v1, v2, v3);
 	   return true;
 	}
