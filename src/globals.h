@@ -64,7 +64,7 @@
 //include logger class
 #include "Logger.h"
 
-#include "GameCamera.h"
+#include "Camera.h"
 #include "Mouse.h"
 #include "KeyHandler.h"
 #include "MaterialManager.h"

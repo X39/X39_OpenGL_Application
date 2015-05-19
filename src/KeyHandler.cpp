@@ -1,6 +1,6 @@
 #include "KeyDefines.h"
 #include "KeyEventCodes.h"
-#include "GameCamera.h"
+#include "Camera.h"
 
 #include <map>
 #include <Windows.h>

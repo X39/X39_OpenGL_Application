@@ -583,9 +583,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	
 	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCButton(0, ::X39::GlobalObject::getInstance().render_height - 200, 160, 20, debugButtonTest, std::string("testButton"), *::X39::Singletons::MaterialManager::getInstance().getMaterialByVmatPath("Materials\\ui_base\\ui_base.vmat"), 0));
 	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCTextBox(0, ::X39::GlobalObject::getInstance().render_height - 40, ::X39::GlobalObject::getInstance().render_width / 2, 20, std::string()));
-	//::X39::Singletons::GameCamera::getInstance().setViewVec(glm::vec3(0.67156154, -0.35836795, 0.64851946));
-	//::X39::Singletons::GameCamera::getInstance().setPos(glm::vec3(-3.5397613, 6.5228815, -3.5409057));
-	::X39::Singletons::GameCamera::getInstance().setPos(glm::vec3(0, 0, 0));
+	//::X39::Singletons::Camera::getInstance().setViewVec(glm::vec3(0.67156154, -0.35836795, 0.64851946));
+	//::X39::Singletons::Camera::getInstance().setPos(glm::vec3(-3.5397613, 6.5228815, -3.5409057));
+	::X39::Singletons::Camera::getInstance().setPos(glm::vec3(0, 0, 0));
 	GLuint vaoID;
 	glGenVertexArrays(1, &vaoID);
 	glBindVertexArray(vaoID);
@@ -641,12 +641,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
         }
         else
 		{
-			glm::mat4 viewMatrix = X39::Singletons::GameCamera::getInstance().recalculateViewPort();
+			glm::mat4 viewMatrix = X39::Singletons::Camera::getInstance().recalculateViewPort();
 			glm::mat4 projectionMatrix = glm::perspective((float)45.0, (float)::X39::GlobalObject::getInstance().render_width / (float)::X39::GlobalObject::getInstance().render_height, 1.0f, 1000.0f);
 #pragma region CameraMovement
 			::glm::vec4 vec = ::glm::vec4(0.0f);
-			float pitch = (float)::X39::Singletons::GameCamera::getInstance().getPitch();
-			float yaw = (float)::X39::Singletons::GameCamera::getInstance().getYaw();
+			float pitch = (float)::X39::Singletons::Camera::getInstance().getPitch();
+			float yaw = (float)::X39::Singletons::Camera::getInstance().getYaw();
 			float modificator = 0.1F;
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LShift))
 				modificator = 1;
@@ -665,7 +665,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 				vec.y -= 1 * modificator;
 
 			vec = viewMatrix * vec;
-			::X39::Singletons::GameCamera::getInstance().addPos(::glm::vec3(vec.x, vec.y, vec.z));
+			::X39::Singletons::Camera::getInstance().addPos(::glm::vec3(vec.x, vec.y, vec.z));
 #pragma endregion
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -699,15 +699,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 					{
 						if ((posX != 0 || posY != 0 || posZ != 0))
 							continue;
-						//glTranslated(i - X39::Singletons::GameCamera::getInstance().getPos().x, 0 - X39::Singletons::GameCamera::getInstance().getPos().y, j - X39::Singletons::GameCamera::getInstance().getPos().z);
+						//glTranslated(i - X39::Singletons::Camera::getInstance().getPos().x, 0 - X39::Singletons::Camera::getInstance().getPos().y, j - X39::Singletons::Camera::getInstance().getPos().z);
 						glBindVertexArray(vaoID);
 						shad.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, &viewMatrix[0][0], -1);
 						shad.setUniformMatrix4fv("projectionMatrix", 1, GL_FALSE, &projectionMatrix[0][0], -1);
 						shad.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, &glm::mat4()[0][0], 0);
 						shad.setUniform3fv("worldPosition", 1, &glm::vec3(
-							posX - X39::Singletons::GameCamera::getInstance().getPos().x,
-							posY - X39::Singletons::GameCamera::getInstance().getPos().y,
-							posZ - X39::Singletons::GameCamera::getInstance().getPos().z
+							posX - X39::Singletons::Camera::getInstance().getPos().x,
+							posY - X39::Singletons::Camera::getInstance().getPos().y,
+							posZ - X39::Singletons::Camera::getInstance().getPos().z
 							)[0], 0);
 						shad.setUniform1i("textureSampler", ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0)->textures[0]->textureUnit, 0);
 						glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -727,9 +727,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			glLoadIdentity();
 			glDisable(GL_CULL_FACE);
 			glClear(GL_DEPTH_BUFFER_BIT);
-			glm::vec3 camPos = ::X39::Singletons::GameCamera::getInstance().getPos();
+			glm::vec3 camPos = ::X39::Singletons::Camera::getInstance().getPos();
 			char s[256];
-			sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::GameCamera::getInstance().getPitch(), ::X39::Singletons::GameCamera::getInstance().getYaw(), ::X39::Singletons::GameCamera::getInstance().getRoll());
+			sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::Camera::getInstance().getPitch(), ::X39::Singletons::Camera::getInstance().getYaw(), ::X39::Singletons::Camera::getInstance().getRoll());
 			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1, 0, 0);
 			
 			//::X39::GlobalObject::getInstance().mainDisplay->draw();

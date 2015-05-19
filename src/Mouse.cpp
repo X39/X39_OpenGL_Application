@@ -87,8 +87,8 @@ namespace X39
 				{
 					pitchModificator = 10;
 				}
-				::X39::Singletons::GameCamera::getInstance().setYaw(yawModificator + ::X39::Singletons::GameCamera::getInstance().getYaw());
-				::X39::Singletons::GameCamera::getInstance().setPitch(pitchModificator + ::X39::Singletons::GameCamera::getInstance().getPitch());
+				::X39::Singletons::Camera::getInstance().setYaw(yawModificator + ::X39::Singletons::Camera::getInstance().getYaw());
+				::X39::Singletons::Camera::getInstance().setPitch(pitchModificator + ::X39::Singletons::Camera::getInstance().getPitch());
 			}
 			
 			POINT p;

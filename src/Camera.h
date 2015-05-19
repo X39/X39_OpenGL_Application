@@ -8,7 +8,7 @@ namespace X39
 {
 	namespace Singletons
 	{
-		class GameCamera
+		class Camera
 		{
 
 			private: 
@@ -18,13 +18,13 @@ namespace X39
 				::glm::vec3 pos;
 				glm::mat4 viewPort;
 
-				GameCamera(void);
-				GameCamera(GameCamera const&);
+				Camera(void);
+				Camera(Camera const&);
 
-				void operator=(GameCamera const&);
+				void operator=(Camera const&);
 
 			public:
-				~GameCamera(void);
+				~Camera(void);
 			
 				double getPitch(void);
 				double getYaw(void);
@@ -39,7 +39,7 @@ namespace X39
 			
 				glm::mat4 recalculateViewPort(void);
 				glm::mat4 getViewPort(void);
-				static GameCamera& getInstance(void);
+				static Camera& getInstance(void);
 		};
 	}
 }
