@@ -3,14 +3,15 @@
 
 //---------------------------INIT HEADER---------------------------
 #ifndef _X39_Globals
-	#define _X39_Globals 1
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
+#define _X39_Globals 1
+
+#ifndef _DEBUG //Force DEBUG mode
+#define _DEBUG 1
 #endif
 
 
 
-//Include required libaries
+//Link required libaries
 #ifndef _X39_INCLUDENEEDEDLIBARIES
 	#define _X39_INCLUDENEEDEDLIBARIES 1
 
@@ -20,9 +21,6 @@
 
 #endif
 //Define Debug macros
-#ifndef _DEBUG //Manual DEBUG mode
-	#define _DEBUG 1
-#endif
 #define _DEBUGRAW 1					//Output informations about RAW input (not processed)
 #define _CAPTUREMOUSE 1				//Capture MouseInput
 #define _CAPTUREKEYBOARD 1			//Capture KeyboardInput
@@ -30,12 +28,21 @@
 #define ENABLE_LOGGER_ToConsole 1	//Enable logging to console
 //#define ENABLE_LOGGER_ToFile 1		//Enable logging to log.txt
 
-
 #define STRINGIFY(DEF) #DEF
 
 #define strEndsWith(STRFULL, STREND) STRFULL.compare(STRFULL.length() - strlen(STREND), strlen(STREND), STREND) == 0
+#ifdef _DEBUG
+	#include "startPoint.h"
+	#define CHECKOPENGLERROR CheckForOpenGLErrors();
+	#define CHECKFOROPENGLERROR(CODE) CODE; CheckForOpenGLErrors()
+#else
+	#define CHECKOPENGLERROR 
+	#define CHECKFOROPENGLERROR(CODE) CODE
+#endif
 
-
+#ifndef GLEW_STATIC
+	#define GLEW_STATIC
+#endif
 #include "GL\glew.h"
 #include "GL\wglew.h"
 #include "glm\glm.hpp"
@@ -63,6 +70,8 @@
 #include "MaterialManager.h"
 #include "GlobalObject.h"
 #include "FontManager.h"
+
+#define TEXTUREUNITFONTS GL_TEXTURE0
 
 #endif
 //-----------------------------------------------------------------

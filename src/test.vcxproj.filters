@@ -66,9 +66,6 @@
     <ClCompile Include="DCButton.cpp">
       <Filter>Quelldateien\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="DCTextBox.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="FontManager.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -89,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="..\include\internal\dotX39\DocumentReader.cpp">
       <Filter>Quelldateien\include</Filter>
+    </ClCompile>
+    <ClCompile Include="DCTextBox.cpp">
+      <Filter>Quelldateien\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -716,9 +716,6 @@
     <ClInclude Include="DCButton.h">
       <Filter>Headerdateien\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="DCTextBox.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="FontManager.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -727,6 +724,9 @@
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="DCTextBox.h">
+      <Filter>Headerdateien\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

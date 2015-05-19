@@ -1,2 +1,0 @@
-vertexShader(path = "base.vert");
-fragmentShader(path = "base.frag");

@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "DCTextBox.h"
 #include "KeyEventCodes.h"
 #include "KeyHandler.h"

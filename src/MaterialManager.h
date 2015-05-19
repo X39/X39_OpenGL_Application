@@ -28,6 +28,7 @@ namespace X39
 			long sizeOfDataArray;
 			int internalFormat;
 			int format;
+			GLenum textureUnit;
 			stTexture(){memset(this, 0, sizeof(struct stTexture));};
 		} TEXTURE;
 		typedef struct stMaterial

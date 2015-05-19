@@ -241,9 +241,9 @@ namespace X39
 		   loc = index;
 		if (loc==-1) 
 		   return false;  
-		
-		glUniform2f(loc, v0, v1);
-		
+
+		glUniform2f(loc, v0, v1); 
+
 		return true;
 	}
 	bool Shader::setUniform3f(GLchar* varname, GLfloat v0, GLfloat v1, GLfloat v2, GLint index)
@@ -619,17 +619,19 @@ namespace X39
 		   loc = index;
 		if (loc==-1) 
 		   return false;  
-		
+		CHECKOPENGLERROR
 		glUniformMatrix4fv(loc, count, transpose, value);
+		CHECKOPENGLERROR
 		return true;
 	}
 	GLint Shader::GetUniformLocation(const GLchar *name)
 	{
 		GLint loc;
 		loc = glGetUniformLocation(this->program, name);
-		if (loc == -1) 
+		if (loc < 0) switch (loc)
 		{
-			LOGGER_WRITE(::Logger::GL_ERROR, std::string("Error: can't find uniform variable '").append(name).append("'"));
+		//case 0: LOGGER_WRITE(::Logger::GL_ERROR, std::string("Error: Programm '").append(std::to_string(this->program)).append("' is unknown for OpenGL")); break;
+		case -1: LOGGER_WRITE(::Logger::GL_ERROR, std::string("Error: can't find uniform variable '").append(name).append("'")); break;
 		}
 		return loc;
 	}

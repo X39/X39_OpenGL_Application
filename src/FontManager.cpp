@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "FontManager.h"
 #include "Logger.h"
 #include <Windows.h>
@@ -16,7 +17,7 @@ namespace X39
 				FatalAppExit(NULL, TEXT("Cannot initialize FontManager!"));
 			}
 			fontShader = ::X39::Shader();
-			fontShader.load("Shaders\\base.shad");
+			fontShader.load("Shaders\\font.shad");
 			fontShader.compile();
 		}
 
@@ -70,6 +71,7 @@ namespace X39
 					return 0;
 				}
 				texture = new TEXTURE();
+				texture->textureUnit = TEXTUREUNITFONTS;
 				font->material->textures[c] = texture;
 
 				texture->trueHeight = font->face->glyph->bitmap.rows;

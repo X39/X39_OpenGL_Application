@@ -1,6 +1,7 @@
 #include "globals.h"
 #include "GuiBase.h"
 #include "Shader.h"
+#include <array>
 namespace X39
 {
 	namespace GUI
@@ -24,48 +25,72 @@ namespace X39
 		{
 			drawTexture2D(mat, 0, tPosX, tPosY, tWidth, tHeight, uiPosX, uiPosY, uiWidth, uiHeight);
 		}
-		//static GLuint vbo_textDrawingVertices = 0;
+		static GLuint texture2D_vao = 0;
 		//static GLuint vbo_textDrawingIndexes = 0;
 		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
-			//if(vbo_textDrawingVertices == 0)
-			//{
-			//	glGenBuffersARB(1, &vbo_textDrawingVertices);
-			//	glGenBuffersARB(1, &vbo_textDrawingIndexes);
-			//	GLfloat vertices[] = {0, 1, 2, 3};
-			//	glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_textDrawingIndexes);
-			//	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, sizeof(vertices), vertices, GL_STATIC_DRAW_ARB);
-			//}
+			if (texture2D_vao == 0)
+			{
+				glGenVertexArrays(1, &texture2D_vao);
+				glBindVertexArray(texture2D_vao);
+
+				GLuint vertBufferID, indexBufferID;
+				glGenBuffers(1, &vertBufferID);
+				glGenBuffers(1, &indexBufferID);
+
+				struct Vec2 { float x, y; };
+				struct Vec3 { float x, y, z; };
+				struct Vert { Vec3 pos; Vec2 tex; };
+
+				std::array<Vert, 4> cubeVerts = { {
+					{ { -0.5f, -0.5f }, { -0.5f, -0.5f } },	//bottom-left
+					{ { -0.5f, 0.5f }, { -0.5f, 0.5f } },	//bottom-right
+					{ { 0.5f, -0.5f }, { 0.5f, -0.5f } },	//top-left
+					{ { 0.5f, 0.5f }, { 0.5f, 0.5f } }		//top-right
+					} };
+
+				std::array<unsigned int, 4> cubeIdxs = { { 0, 1, 2, 3 } };
+
+				// Vertex buffer
+				glBindBuffer(GL_ARRAY_BUFFER, vertBufferID);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * cubeVerts.size(), cubeVerts.data(), GL_STATIC_DRAW);
+				glEnableVertexAttribArray(0); // Matches layout (location = 0)
+				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), 0);
+				glEnableVertexAttribArray(1); // Matches layout (location = 1)
+				glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (GLvoid*)sizeof(Vec3));
+
+				// Index buffer
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * cubeIdxs.size(), cubeIdxs.data(), GL_STATIC_DRAW);
+				glBindVertexArray(0);
+			}
 			::X39::Singletons::TEXTURE* texture = mat->textures[textureIndex];
 			double textureWidth = texture->width;
 			double textureHeight = texture->height;
-			//if(texture->trueHeight != 0)
-			//	uiPosY += ((texture->height - texture->trueHeight) / (double)texture->height) * uiHeight / 2;
 			::X39::Singletons::MaterialManager::getInstance().loadMaterial(mat, textureIndex);
-			//glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo_textDrawingVertices);
-			//glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, vbo_textDrawingIndexes);
-//			::X39::Singletons::FontManager::getInstance().fontShader.use(0);
-			//GLfloat vertices[] = {
-			//						uiPosX,				uiPosY,
-			//						uiPosX + uiWidth,	uiPosY,
-			//						uiPosX + uiWidth,	uiPosY +uiHeight,
-			//						uiPosX,				uiPosY +uiHeight
-			//					 };
-			//glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices), vertices, GL_STREAM_DRAW_ARB);
-			//glEnableClientState(GL_VERTEX_ARRAY);
-			//glVertexPointer(3, GL_FLOAT, 0, 0);
-			//glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, 0);
-			//glDisableClientState(GL_VERTEX_ARRAY);
-			//glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-			//glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
-			glBegin(GL_QUADS);
-				glTexCoord2f(tPosX / textureWidth,				tPosY / textureHeight				);	glVertex2f(uiPosX,				uiPosY			);
-				glTexCoord2f((tPosX + tWidth) / textureWidth,	tPosY / textureHeight				);	glVertex2f(uiPosX + uiWidth,	uiPosY			);
-				glTexCoord2f((tPosX + tWidth) / textureWidth,	(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX + uiWidth,	uiPosY +uiHeight);
-				glTexCoord2f(tPosX / textureWidth,				(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX,				uiPosY +uiHeight);
-			glEnd();
+			Shader& shad = ::X39::Singletons::FontManager::getInstance().fontShader;
+			shad.use();
+			::glm::mat4 scaleMatrix = ::glm::scale(::glm::mat4(1.0f), ::glm::vec3((float)uiWidth, (float)uiHeight, 10.f));
+			glBindVertexArray(texture2D_vao);
+			//shad.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, &viewMatrix[0][0], -1);
+			//shad.setUniformMatrix4fv("projectionMatrix", 1, GL_FALSE, &projectionMatrix[0][0], -1);
+			//shad.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, &glm::mat4()[0][0], 0);
+			shad.setUniform2f("textureMeasurements", (float)textureWidth, (float)textureHeight, -1);
+			shad.setUniformMatrix4fv("scaleMatrix", 1, GL_FALSE, &scaleMatrix[0][0], -1);
+			shad.setUniform2f("screenPosition", (float)uiPosX, (float)uiPosY, -1);
+			shad.setUniform1i("texture_sampler", GL_TEXTURE0, -1);
+			glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+			shad.unuse();
 
-//			::X39::Singletons::FontManager::getInstance().fontShader.unuse();
+
+			//glBegin(GL_QUADS);
+			//	glTexCoord2f(tPosX / textureWidth,				tPosY / textureHeight				);	glVertex2f(uiPosX,				uiPosY				);
+			//	glTexCoord2f((tPosX + tWidth) / textureWidth,	tPosY / textureHeight				);	glVertex2f(uiPosX + uiWidth,	uiPosY				);
+			//	glTexCoord2f((tPosX + tWidth) / textureWidth,	(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX + uiWidth,	uiPosY + uiHeight	);
+			//	glTexCoord2f(tPosX / textureWidth,				(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX,				uiPosY + uiHeight	);
+			//glEnd();
+
 		}
 		
 		void GuiBase::drawText2D(::X39::Singletons::FONT* font, const char* s, float size, double uiPosX, double uiPosY)

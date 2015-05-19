@@ -1,3 +1,4 @@
+#include "globals.h"
 #include "DCButton.h"
 
 
@@ -21,7 +22,7 @@ namespace X39
 		{
 			::X39::Singletons::MATERIAL* mat = &this->material;
 			int textureIndex = 0;
-			if(width < 16 || height < 16)
+			if (width < 16 || height < 16)
 			{
 				drawTexture2D(mat, textureIndex, 0, 0, mat->textures[0]->width, mat->textures[0]->height, posX, posY, width, height);
 			}

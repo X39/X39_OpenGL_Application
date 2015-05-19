@@ -1,0 +1,2 @@
+vertexShader(path = "font.vert");
+fragmentShader(path = "font.frag");

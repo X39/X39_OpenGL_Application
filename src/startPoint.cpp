@@ -576,7 +576,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\ui_base\\ui_base.vmat");
 	::X39::Singletons::FontManager::getInstance().registerFont("Fonts\\arial.ttf");
 	::X39::Shader shad;
-	shad.load("Shaders\\shad2.shad");
+	shad.load("Shaders\\base.shad");
 	shad.compile();
 	::X39::Model model = ::X39::Model("Models\\test.obj");
 	model.loader_dotObj();
@@ -667,7 +667,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			vec = viewMatrix * vec;
 			::X39::Singletons::GameCamera::getInstance().addPos(::glm::vec3(vec.x, vec.y, vec.z));
 #pragma endregion
-			glClearColor(0, 1, 0, 0);
+			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			//glMatrixMode(GL_MODELVIEW);
@@ -709,6 +709,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 							posY - X39::Singletons::GameCamera::getInstance().getPos().y,
 							posZ - X39::Singletons::GameCamera::getInstance().getPos().z
 							)[0], 0);
+						shad.setUniform1i("textureSampler", ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0)->textures[0]->textureUnit, 0);
 						glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 						glBindVertexArray(0);
 					}
@@ -729,10 +730,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			glm::vec3 camPos = ::X39::Singletons::GameCamera::getInstance().getPos();
 			char s[256];
 			sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::GameCamera::getInstance().getPitch(), ::X39::Singletons::GameCamera::getInstance().getYaw(), ::X39::Singletons::GameCamera::getInstance().getRoll());
-			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1, 0, 0);
+			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1, 0, 0);
 			
 			//::X39::GlobalObject::getInstance().mainDisplay->draw();
-			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), "a-_.", 3, 0, 0);
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
 			//glMatrixMode(GL_MODELVIEW);

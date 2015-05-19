@@ -59,6 +59,7 @@ namespace X39
 					{
 						const Node* layer2 = layer1->getNode(layer1NodeIndex);
 						TEXTURE* texture = new TEXTURE();
+						texture->textureUnit = GL_TEXTURE1;
 						texture->subname = layer2->getName();
 						for (unsigned int layer2ArgumentIndex = 0; layer2ArgumentIndex < layer2->getArgumentCount(); layer2ArgumentIndex++)
 						{
@@ -232,6 +233,7 @@ namespace X39
 		{
 			if(mat->textures.size() <= i)
 				return;
+			glActiveTexture(mat->textures[i]->textureUnit);
 			if(mat->gpuTextures[i] == 0)
 			{
 				glEnable( GL_TEXTURE_2D );

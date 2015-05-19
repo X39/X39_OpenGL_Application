@@ -1,8 +1,2 @@
-vertexShader(path = "base.vert")
-{
-	attributes
-	{
-		att1(type = 0, value = "0");
-	}
-}
+vertexShader(path = "base.vert");
 fragmentShader(path = "base.frag");
