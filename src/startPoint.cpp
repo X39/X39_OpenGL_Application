@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <omp.h>
 #include <array>
+#include <mutex>
 
 LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam ) 
 {
@@ -228,6 +229,11 @@ void resizeWindow(int posX, int posY, int width, int height)
 		MessageBox(::X39::GlobalObject::getInstance().windowHandle, (LPCWSTR)L"Could not get window size\nFatal Error 001", (LPCWSTR)L"FATAL ERROR - FE001", MB_OK | MB_ICONERROR);
 		exit(-1);
 	}
+	int i;
+	if (i = createRenderingContext() != 0)
+	{
+		FatalAppExit(NULL, TEXT("createRenderingContext() failed!"));
+	}
 }
 RECT GetDesktopResolution()
 {
@@ -400,36 +406,18 @@ int setPixelFormat()
 	*/
 	return 0;
 }
+static ::std::mutex renderingMutex;
 int createRenderingContext()
 {
-	/*
-	4.  CREATE RENDERING CONTEXT (HGLRC).
-
-	What's a rendering context?
-	Its the "surface" that OpenGL
-	will DRAW to.
-
-	The HGLRC will be created
-	such that it is COMPATIBLE
-	with the hdc.
-	*/
+	renderingMutex.lock();
+	if (::X39::GlobalObject::getInstance().windowGlRenderingContextHandle)
+	{
+		wglMakeCurrent(::X39::GlobalObject::getInstance().handleDeviceContext, NULL);
+		wglDeleteContext(::X39::GlobalObject::getInstance().windowGlRenderingContextHandle);
+	}
 	::X39::GlobalObject::getInstance().windowGlRenderingContextHandle = wglCreateContext( ::X39::GlobalObject::getInstance().handleDeviceContext );
-	/*
-	Created the rendering context
-	and saved handle to it in global 'g'.
-	
-	Wasn't that awfully easy to create
-	such a complicated sounding thing?
-	*/
-	/*
-	5.  CONNECT THE RENDER CONTEXT (HGLRC)
-	    WITH THE DEVICE CONTEXT (HDC) OF WINDOW.
-	*/
 	wglMakeCurrent( ::X39::GlobalObject::getInstance().handleDeviceContext, ::X39::GlobalObject::getInstance().windowGlRenderingContextHandle );
-	/*
-	
-	OPEN GL INIT COMPLETED!!
-	*/
+	renderingMutex.unlock();
 	return 0;
 }
 int createDevices()
@@ -539,7 +527,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	}
 	if(i = createRenderingContext() != 0)
 	{
-			FatalAppExit(NULL, TEXT("createRenderingContext() failed!"));
+		FatalAppExit(NULL, TEXT("createRenderingContext() failed!"));
 	}
 	if(i = createDevices() != 0)
 	{
@@ -555,8 +543,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 
 	::X39::GlobalObject::getInstance().mainDisplay = new ::X39::GUI::GuiBase();
 	
-	//RECT rect = GetDesktopResolution();
-	//resizeWindow(0, 0, rect.right, rect.bottom);
+	RECT rect = GetDesktopResolution();
+	resizeWindow(0, 0, rect.right, rect.bottom);
 
     #pragma region message loop
     MSG msg;
@@ -599,10 +587,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	struct Vert { Vec3 pos; Vec2 tex; };
 
 	std::array<Vert, 8> cubeVerts = {{
-		{ {  0.4f,  0.4f,  0.4f }, { 9.0f, 0.0f } }, { {  0.4f,  0.4f, -0.4f }, { 9.0f, 9.0f } },
-		{ {  0.4f, -0.4f, -0.4f }, { 0.0f, 9.0f } }, { {  0.4f, -0.4f,  0.4f }, { 0.0f, 0.0f } },
-		{ { -0.4f,  0.4f,  0.4f }, { 0.0f, 0.0f } }, { { -0.4f,  0.4f, -0.4f }, { 0.0f, 9.0f } },
-		{ { -0.4f, -0.4f, -0.4f }, { 9.0f, 9.0f } }, { { -0.4f, -0.4f,  0.4f }, { 9.0f, 0.0f } }
+		{ {  0.4f,  0.4f,  0.4f }, { 1.0f, 0.0f } },//0
+		{ {  0.4f,  0.4f, -0.4f }, { 1.0f, 1.0f } },//1
+		{ {  0.4f, -0.4f, -0.4f }, { 0.0f, 1.0f } },//2
+		{ {  0.4f, -0.4f,  0.4f }, { 0.0f, 0.0f } },//3
+		{ { -0.4f,  0.4f,  0.4f }, { 0.0f, 0.0f } },//4
+		{ { -0.4f,  0.4f, -0.4f }, { 0.0f, 1.0f } },//5
+		{ { -0.4f, -0.4f, -0.4f }, { 1.0f, 1.0f } },//6
+		{ { -0.4f, -0.4f,  0.4f }, { 1.0f, 0.0f } }	//7
 	}};
 
 	std::array<unsigned int, 36> cubeIdxs = {{ 
@@ -641,6 +633,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
         }
         else
 		{
+			renderingMutex.lock();
 			glm::mat4 viewMatrix = X39::Singletons::Camera::getInstance().recalculateViewPort();
 			glm::mat4 projectionMatrix = glm::perspective((float)45.0, (float)::X39::GlobalObject::getInstance().render_width / (float)::X39::GlobalObject::getInstance().render_height, 1.0f, 1000.0f);
 #pragma region CameraMovement
@@ -667,13 +660,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			vec = viewMatrix * vec;
 			::X39::Singletons::Camera::getInstance().addPos(::glm::vec3(vec.x, vec.y, vec.z));
 #pragma endregion
-			glClearColor(0, 0, 0, 0);
+			glClearColor(0.25, 0.25, 0.25, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			//glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
-			glViewport(0, 0, ::X39::GlobalObject::getInstance().render_width, ::X39::GlobalObject::getInstance().render_height);
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL);
 			glShadeModel(GL_SMOOTH);
@@ -690,6 +682,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			
 			glPushMatrix();
 			::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0));
+			//::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::FontManager::getInstance().getFont(0)->material, ::X39::Singletons::FontManager::getInstance().getCharTextureIndex(::X39::Singletons::FontManager::getInstance().getFont(0), 'a'));
+			
 			shad.use();
 			for (float posX = 5; posX > -5; posX--)
 			{
@@ -708,8 +702,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 							posX - X39::Singletons::Camera::getInstance().getPos().x,
 							posY - X39::Singletons::Camera::getInstance().getPos().y,
 							posZ - X39::Singletons::Camera::getInstance().getPos().z
-							)[0], 0);
+							)[0], 0); 
+						//shad.setUniform4fv("color", 1, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0], -1);
 						shad.setUniform1i("textureSampler", ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0)->textures[0]->textureUnit, 0);
+						
+						//shad.setUniform1iv("textureSampler", 1, (GLint*)&(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0)->textures[0]->textureUnit), 0);
+						CheckForOpenGLErrors();
 						glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 						glBindVertexArray(0);
 					}
@@ -719,26 +717,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			glPopMatrix();
 
 			//2D projection
-			glMatrixMode(GL_PROJECTION);
 			glPushMatrix();
 			glLoadIdentity();
 			glOrtho(0.0, ::X39::GlobalObject::getInstance().render_width, ::X39::GlobalObject::getInstance().render_height, 0.0, -1.0, 10.0);
-			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glDisable(GL_CULL_FACE);
 			glClear(GL_DEPTH_BUFFER_BIT);
 			glm::vec3 camPos = ::X39::Singletons::Camera::getInstance().getPos();
 			char s[256];
-			sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::Camera::getInstance().getPitch(), ::X39::Singletons::Camera::getInstance().getYaw(), ::X39::Singletons::Camera::getInstance().getRoll());
+			//sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::Camera::getInstance().getPitch(), ::X39::Singletons::Camera::getInstance().getYaw(), ::X39::Singletons::Camera::getInstance().getRoll());
 			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1, 0, 0);
-			
+//			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 1, 0, 0);
+			::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'A', -0.5, -0.5, ::X39::GlobalObject::getInstance().render_width * 1, ::X39::GlobalObject::getInstance().render_height * 2);
+			//::X39::Singletons::FontManager::getInstance().fontShader.use();
+			//::X39::GUI::GuiBase::drawTexture2D(
+			//	::X39::Singletons::FontManager::getInstance().getFont(0)->material,
+			//	::X39::Singletons::FontManager::getInstance().getCharTextureIndex(::X39::Singletons::FontManager::getInstance().getFont(0), 'A'),
+			//	0, 0, 16, 16,
+			//	0, 0, 256, 256,
+			//	::X39::Singletons::FontManager::getInstance().fontShader
+			//);
+			//::X39::Singletons::FontManager::getInstance().fontShader.unuse();
 			//::X39::GlobalObject::getInstance().mainDisplay->draw();
-			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
-			//glMatrixMode(GL_MODELVIEW);
 
 			SwapBuffers(::X39::GlobalObject::getInstance().handleDeviceContext);
 			CheckForOpenGLErrors();
+			renderingMutex.unlock();
         }
 		frameTime = omp_get_wtime() - frameTime;
 		if(tickOut > 1 / frameTime)

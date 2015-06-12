@@ -38,6 +38,7 @@ namespace X39
 		//	}
 		std::string dir = path.substr(0, path.find_last_of("/\\"));
 		Node* root;
+		LOGGER_WRITE(::Logger::INFOImportant, std::string("Loading Shader '").append(path).append("' to RAM"));
 		try
 		{
 			root = new Node("root");
@@ -49,6 +50,7 @@ namespace X39
 			delete root;
 			return false;
 		}
+		this->fileName = path;
 		char buffer[256]; memset(buffer, 0, sizeof(buffer));
 		for (unsigned int rootNodeIndex = 0; rootNodeIndex < root->getNodeCount(); rootNodeIndex++)
 		{
@@ -141,11 +143,13 @@ namespace X39
 	}
 	bool Shader::compile(void)
 	{
+		LOGGER_WRITE(::Logger::DEBUG, std::string("Compiling Shader '").append(this->fileName).append("'"));
 		GLint error = GL_FALSE;
 		const char* vs_source = this->vertexShaderSource.c_str();
 		const char* fs_source = this->fragmentShaderSource.c_str();
 
 		//Create & compile vertex shader
+		LOGGER_WRITE(::Logger::DEBUG, std::string("\tCompiling Vertex"));
 		this->vshader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(this->vshader, 1, &vs_source, NULL);
 		glCompileShader(this->vshader);
@@ -160,8 +164,9 @@ namespace X39
 			delete[logSize] log;
 			return false;
 		}
-		
+
 		//Create & compile fragment shader
+		LOGGER_WRITE(::Logger::DEBUG, std::string("\tCompiling Fragment"));
 		this->fshader = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(this->fshader, 1, &fs_source, NULL);
 		glCompileShader(this->fshader);
@@ -178,6 +183,7 @@ namespace X39
 		}
 
 		//Create & Link GLSL programm
+		LOGGER_WRITE(::Logger::DEBUG, std::string("\tLinking Shaders together"));
 		this->program = glCreateProgram();
 		glAttachShader(this->program, this->vshader);
 		glAttachShader(this->program, this->fshader);
@@ -286,8 +292,7 @@ namespace X39
 		else
 		   loc = index;
 		if (loc==-1) 
-		   return false;  
-		
+		   return false;
 		glUniform1i(loc, v0);
 		
 		return true;
@@ -626,6 +631,10 @@ namespace X39
 	}
 	GLint Shader::GetUniformLocation(const GLchar *name)
 	{
+		//GLint id;
+		//glGetIntegerv(GL_CURRENT_PROGRAM, &id);
+		//LOGGER_WRITE(::Logger::DEBUG, std::string("CURRENT PROGRAMM WHILE LOOKUP '").append(std::to_string(id)).append("'"));
+
 		GLint loc;
 		loc = glGetUniformLocation(this->program, name);
 		if (loc < 0) switch (loc)

@@ -22,6 +22,7 @@ namespace X39
 			std::string vertexShaderSource;
 			std::vector<unsigned int> vertexShaderAttributeLocations;
 			std::string fragmentShaderSource;
+			std::string fileName;
 			bool compiled;
 
 		public:

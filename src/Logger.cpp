@@ -13,17 +13,16 @@ using namespace std;
 const std::string Logger::PRIORITY_NAMES[] =
 {
 	"",
-	"[FPS]\t",
+	"[FPS]      ",
 	"[USERINPUT]",
-	"[DEBUG]\t",
-	"[CONFIG]\t",
-	"[INFO]\t\t",
-	"[INFO]\t\t",
-	"[WARNING]\t",
-	"[ERROR]\t",
-	"[GL_ERROR]\t",
-	"",
-	"\t\t\t"
+	"[DEBUG]    ",
+	"[CONFIG]   ",
+	"[INFO]     ",
+	"[INFO]     ",
+	"[WARNING]  ",
+	"[ERROR]    ",
+	"[GL_ERROR] ",
+	"           "
 };
 
 Logger Logger::instance;

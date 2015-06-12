@@ -35,8 +35,7 @@ public:
         WARNING,
         ERRORmsg,
         GL_ERROR,
-        EMPTY,
-        TABULATOR
+        EMPTY
     };
  
     // start/stop logging

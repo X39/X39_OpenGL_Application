@@ -71,7 +71,5 @@
 #include "GlobalObject.h"
 #include "FontManager.h"
 
-#define TEXTUREUNITFONTS GL_TEXTURE0
-
 #endif
 //-----------------------------------------------------------------

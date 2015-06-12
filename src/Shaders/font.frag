@@ -4,12 +4,14 @@ precision highp float;
 
 in vec2 UV;
 
-uniform sampler2D texture_sampler;
+uniform sampler2D textureSampler;
 uniform mat4 scaleMatrix;
-uniform vec2 textureMeasurements;
+uniform float[6] UV_Manipulators;
 
 layout( location = 0 ) out vec4 FragColor;
 
-void main(void) {
-	FragColor = vec4(texture(texture_sampler, UV / textureMeasurements).rgba) * scaleMatrix;
+void main(void)
+{
+	vec3 fragColor3 = texture(textureSampler, UV).rgb;
+	FragColor = vec4(fragColor3, 1);//fragColor3.r);
 }

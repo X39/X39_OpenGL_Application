@@ -30,8 +30,8 @@ namespace X39
 
 				void addChild(GuiBase* child);
 		
-				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
-				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
+				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad);
+				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad);
 				static void drawText2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY);
 				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY);
 				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY, double maxWidth);
@@ -45,6 +45,8 @@ namespace X39
 				bool isEnabled(void);
 				void setEnabled(bool flag);
 
+				Shader& getShader(void);
+
 				virtual void draw(void);
 				virtual bool mouseClick(LPPOINT mousePos, ULONG ulButtons, USHORT usButtonData);
 				virtual bool mouseMove(int posX, int posY, LPPOINT mousePos);
@@ -54,6 +56,7 @@ namespace X39
 				virtual bool e_mouseClick(LPPOINT mousePos, ULONG ulButtons, USHORT usButtonData);
 				virtual bool e_mouseMove(int posX, int posY, LPPOINT mousePos);
 				virtual bool e_keyPressed(int mode, USHORT key);
+
 		};
 	};
 };

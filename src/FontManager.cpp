@@ -56,7 +56,7 @@ namespace X39
 			{
 				FT_Error		err;
 				//err = FT_Set_Char_Size(font->face, 256, 0, 100, 0);
-				err = FT_Set_Pixel_Sizes(font->face, 256, 256);
+				err = FT_Set_Pixel_Sizes(font->face, 512, 512);
 				if(err != FT_Err_Ok)
 				{
 					char stringWorkaround[2] = {c, 0x00};
@@ -71,7 +71,7 @@ namespace X39
 					return 0;
 				}
 				texture = new TEXTURE();
-				texture->textureUnit = TEXTUREUNITFONTS;
+				texture->textureUnit = 0;
 				font->material->textures[c] = texture;
 
 				texture->trueHeight = font->face->glyph->bitmap.rows;

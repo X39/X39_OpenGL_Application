@@ -32,6 +32,7 @@ namespace X39
 
 		MATERIAL* MaterialManager::registerTexture(std::string& vmatPath)
 		{
+			LOGGER_WRITE(::Logger::INFOImportant, std::string("Loading vmat '").append(vmatPath).append("'"));
 			Node* root;
 			try
 			{
@@ -48,7 +49,6 @@ namespace X39
 			MATERIAL* mat = new MATERIAL();
 			mat->vmatPath = std::string(vmatPath);
 			std::string vmatDir = mat->vmatPath.substr(0, mat->vmatPath.find_last_of("/\\"));
-			LOGGER_WRITE(::Logger::INFOImportant, std::string("Parsing vmat '").append(vmatPath).append("'"));
 			for (unsigned int rootNodeIndex = 0; rootNodeIndex < root->getNodeCount(); rootNodeIndex++)
 			{
 				const Node* layer1 = root->getNode(rootNodeIndex);
@@ -59,7 +59,7 @@ namespace X39
 					{
 						const Node* layer2 = layer1->getNode(layer1NodeIndex);
 						TEXTURE* texture = new TEXTURE();
-						texture->textureUnit = GL_TEXTURE1;
+						texture->textureUnit = 1;
 						texture->subname = layer2->getName();
 						for (unsigned int layer2ArgumentIndex = 0; layer2ArgumentIndex < layer2->getArgumentCount(); layer2ArgumentIndex++)
 						{
@@ -233,7 +233,7 @@ namespace X39
 		{
 			if(mat->textures.size() <= i)
 				return;
-			glActiveTexture(mat->textures[i]->textureUnit);
+			glActiveTexture(GL_TEXTURE0 + mat->textures[i]->textureUnit);
 			if(mat->gpuTextures[i] == 0)
 			{
 				glEnable( GL_TEXTURE_2D );

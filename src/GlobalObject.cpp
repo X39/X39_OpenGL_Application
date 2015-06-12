@@ -6,6 +6,10 @@ namespace X39
 {
 	GlobalObject::GlobalObject(void)
 	{
+		this->windowGlRenderingContextHandle = nullptr;
+		this->windowHandle = nullptr;
+		this->mainDisplay = nullptr;
+		this->handleDeviceContext = nullptr;
 	}
 
 	GlobalObject::~GlobalObject(void)

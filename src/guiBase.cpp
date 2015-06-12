@@ -2,6 +2,7 @@
 #include "GuiBase.h"
 #include "Shader.h"
 #include <array>
+#include <glm\gtx\euler_angles.hpp>
 namespace X39
 {
 	namespace GUI
@@ -21,13 +22,13 @@ namespace X39
 			children.push_back(child);
 		}
 
-		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad)
 		{
-			drawTexture2D(mat, 0, tPosX, tPosY, tWidth, tHeight, uiPosX, uiPosY, uiWidth, uiHeight);
+			drawTexture2D(mat, 0, tPosX, tPosY, tWidth, tHeight, uiPosX, uiPosY, uiWidth, uiHeight, shad);
 		}
 		static GLuint texture2D_vao = 0;
 		//static GLuint vbo_textDrawingIndexes = 0;
-		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
+		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad)
 		{
 			if (texture2D_vao == 0)
 			{
@@ -42,18 +43,18 @@ namespace X39
 				struct Vec3 { float x, y, z; };
 				struct Vert { Vec3 pos; Vec2 tex; };
 
-				std::array<Vert, 4> cubeVerts = { {
-					{ { -0.5f, -0.5f }, { -0.5f, -0.5f } },	//bottom-left
-					{ { -0.5f, 0.5f }, { -0.5f, 0.5f } },	//bottom-right
-					{ { 0.5f, -0.5f }, { 0.5f, -0.5f } },	//top-left
-					{ { 0.5f, 0.5f }, { 0.5f, 0.5f } }		//top-right
+				std::array<Vert, 4>  verts = { {
+					{ { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } },
+					{ { 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } },
+					{ { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } },
+					{ { 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }
 					} };
 
-				std::array<unsigned int, 4> cubeIdxs = { { 0, 1, 2, 3 } };
+				std::array<unsigned int, 6> indexies = { { 0, 1, 2, 3} };
 
 				// Vertex buffer
 				glBindBuffer(GL_ARRAY_BUFFER, vertBufferID);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * cubeVerts.size(), cubeVerts.data(), GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * verts.size(), verts.data(), GL_STATIC_DRAW);
 				glEnableVertexAttribArray(0); // Matches layout (location = 0)
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), 0);
 				glEnableVertexAttribArray(1); // Matches layout (location = 1)
@@ -61,34 +62,39 @@ namespace X39
 
 				// Index buffer
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * cubeIdxs.size(), cubeIdxs.data(), GL_STATIC_DRAW);
+				glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indexies.size(), indexies.data(), GL_STATIC_DRAW);
 				glBindVertexArray(0);
 			}
 			::X39::Singletons::TEXTURE* texture = mat->textures[textureIndex];
-			double textureWidth = texture->width;
-			double textureHeight = texture->height;
 			::X39::Singletons::MaterialManager::getInstance().loadMaterial(mat, textureIndex);
-			Shader& shad = ::X39::Singletons::FontManager::getInstance().fontShader;
-			shad.use();
-			::glm::mat4 scaleMatrix = ::glm::scale(::glm::mat4(1.0f), ::glm::vec3((float)uiWidth, (float)uiHeight, 10.f));
+			::glm::mat4 scaleMatrix = ::glm::scale(::glm::mat4(1.0f), ::glm::vec3((float)uiWidth, (float)uiHeight, 1.0f));
+			std::array<float, 6> uvManipulation = { tPosX, tPosY, tWidth, tHeight, texture->width, texture->height };
 			glBindVertexArray(texture2D_vao);
-			//shad.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, &viewMatrix[0][0], -1);
-			//shad.setUniformMatrix4fv("projectionMatrix", 1, GL_FALSE, &projectionMatrix[0][0], -1);
-			//shad.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, &glm::mat4()[0][0], 0);
-			shad.setUniform2f("textureMeasurements", (float)textureWidth, (float)textureHeight, -1);
+			//glm::mat4 viewMatrix = X39::Singletons::Camera::getInstance().recalculateViewPort();
+			glm::mat4 viewMatrix = ::glm::eulerAngleYXZ(0 / 180 * PIconst, 180 / 180 * PIconst, 0 / 180 * PIconst);
+			glm::mat4 projectionMatrix = glm::perspective((float)45.0, (float)::X39::GlobalObject::getInstance().render_width / (float)::X39::GlobalObject::getInstance().render_height, 1.0f, 1000.0f);
+
+			shad.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, &viewMatrix[0][0], -1);
+			shad.setUniformMatrix4fv("projectionMatrix", 1, GL_FALSE, &projectionMatrix[0][0], -1);
+			shad.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, &glm::mat4()[0][0], -1);
 			shad.setUniformMatrix4fv("scaleMatrix", 1, GL_FALSE, &scaleMatrix[0][0], -1);
-			shad.setUniform2f("screenPosition", (float)uiPosX, (float)uiPosY, -1);
-			shad.setUniform1i("texture_sampler", GL_TEXTURE0, -1);
-			glDrawElements(GL_QUADS, 4, GL_UNSIGNED_INT, 0);
+			shad.setUniform1fv("UV_Manipulators", 6, uvManipulation.data(), -1);
+			shad.setUniform3fv("worldPosition", 1, &glm::vec3(
+				uiPosX,
+				uiPosY,
+				1000
+				)[0], -1);
+			//shad.setUniform2f("screenPosition", (float)uiPosX, (float)uiPosY, -1);
+			shad.setUniform1i("textureSampler", texture->textureUnit, -1);
+			glDrawElements(GL_QUADS, 6, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
-			shad.unuse();
 
 
 			//glBegin(GL_QUADS);
-			//	glTexCoord2f(tPosX / textureWidth,				tPosY / textureHeight				);	glVertex2f(uiPosX,				uiPosY				);
-			//	glTexCoord2f((tPosX + tWidth) / textureWidth,	tPosY / textureHeight				);	glVertex2f(uiPosX + uiWidth,	uiPosY				);
-			//	glTexCoord2f((tPosX + tWidth) / textureWidth,	(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX + uiWidth,	uiPosY + uiHeight	);
-			//	glTexCoord2f(tPosX / textureWidth,				(tPosY + tHeight) / textureHeight	);	glVertex2f(uiPosX,				uiPosY + uiHeight	);
+			//glTexCoord2f( tPosX			/ texture->width,  tPosY			/ texture->height);	glVertex2f(uiPosX			, uiPosY			);
+			//glTexCoord2f((tPosX + tWidth)	/ texture->width,  tPosY			/ texture->height);	glVertex2f(uiPosX + uiWidth	, uiPosY			);
+			//glTexCoord2f((tPosX + tWidth)	/ texture->width, (tPosY + tHeight)	/ texture->height);	glVertex2f(uiPosX + uiWidth	, uiPosY + uiHeight	);
+			//glTexCoord2f( tPosX			/ texture->width, (tPosY + tHeight)	/ texture->height);	glVertex2f(uiPosX			, uiPosY + uiHeight	);
 			//glEnd();
 
 		}
@@ -148,6 +154,8 @@ namespace X39
 
 		void GuiBase::drawChar2D(::X39::Singletons::FONT* font, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight)
 		{
+			Shader& shad = ::X39::Singletons::FontManager::getInstance().fontShader;
+			shad.use();
 			int charCode = c;
 			if(charCode < 0)
 				charCode = 0;
@@ -156,7 +164,9 @@ namespace X39
 			unsigned int fontIndex = ::X39::Singletons::FontManager::getInstance().getCharTextureIndex(font, c);
 			double w = (double)font->material->textures[fontIndex]->width;
 			double h = (double)font->material->textures[fontIndex]->height;
-			drawTexture2D(font->material, fontIndex, charCode % 32 * w, charCode / 32 * h, w, h, uiPosX, uiPosY, uiWidth, uiHeight);
+			//drawTexture2D(font->material, fontIndex, charCode % 32 * w, charCode / 32 * h, w, h, uiPosX, uiPosY, uiWidth, uiHeight);
+			drawTexture2D(font->material, fontIndex, 0, 0, w, h, uiPosX, uiPosY, uiWidth, uiHeight, shad);
+			shad.unuse();
 		}
 		
 		bool GuiBase::isFocused(void)
@@ -223,5 +233,9 @@ namespace X39
 		bool GuiBase::e_mouseClick(LPPOINT mousePos, ULONG ulButtons, USHORT usButtonData){return false;}
 		bool GuiBase::e_mouseMove(int posX, int posY, LPPOINT mousePos){return false;}
 		bool GuiBase::e_keyPressed(int mode, USHORT key){return false;}
+		Shader& GuiBase::getShader(void)
+		{
+			return ::X39::Singletons::FontManager::getInstance().fontShader;
+		}
 	}
 }
