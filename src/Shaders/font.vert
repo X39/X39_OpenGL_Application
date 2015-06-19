@@ -4,11 +4,9 @@
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV_modelspace;
 
-uniform vec2 screenPosition;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 scaleMatrix;
-uniform mat4 modelMatrix;
 uniform vec3 worldPosition;
 
 out vec2 UV;
@@ -17,7 +15,7 @@ uniform float[6] UV_Manipulators;
 
 void main()
 {
-    gl_Position = vec4((vertexPosition_modelspace + worldPosition), 1) * viewMatrix * projectionMatrix * modelMatrix * scaleMatrix;
+    gl_Position = projectionMatrix * scaleMatrix * vec4((vertexPosition_modelspace + worldPosition), 1);
 	vec2 newUV = vertexUV_modelspace;
 	if(newUV.x > 0)
 	{

@@ -22,7 +22,8 @@ const std::string Logger::PRIORITY_NAMES[] =
 	"[WARNING]  ",
 	"[ERROR]    ",
 	"[GL_ERROR] ",
-	"           "
+	"           ",
+	""
 };
 
 Logger Logger::instance;
@@ -77,6 +78,11 @@ void Logger::Write(Priority priority, const double d)
 	sprintf(str, "%lf", d);
 	Write(priority, str);
 }
+void Logger::Write(Priority priority, const unsigned char c)
+{
+	char str[] = { c, 0x00 };
+	Write(priority, str);
+}
 
 void Logger::Write(Priority priority, const std::string message)
 {
@@ -89,17 +95,31 @@ void Logger::Write(Priority priority, const char* message)
     {
         // identify current output stream
         ostream& stream = ((fileStream.is_open()) ? (fileStream) : (std::cout));
- 
-        stream  << PRIORITY_NAMES[priority]
+
+		if (priority == ::Logger::RAW)
+		{
+			stream << message;
+		}
+		else
+		{
+			stream << PRIORITY_NAMES[priority]
 				<< ' '
-                << message
-                << endl;
+				<< message
+				<< endl;
+		}
     }
 #endif
 #ifdef ENABLE_LOGGER_ToConsole
-	cout << PRIORITY_NAMES[priority]
+	if (priority == ::Logger::RAW)
+	{
+		cout << message;
+	}
+	else
+	{
+		cout << PRIORITY_NAMES[priority]
 			<< ' '
-            << message
-            << endl;
+			<< message
+			<< endl;
+	}
 #endif
 }

@@ -32,11 +32,12 @@ namespace X39
 		
 				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad);
 				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad);
-				static void drawText2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY);
-				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY);
-				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY, double maxWidth);
-				static void drawTextLine2D(::X39::Singletons::FONT* mat, int strLen, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
-				static void drawChar2D(::X39::Singletons::FONT* mat, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight);
+				static void drawTexture2DColored(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, float red, float green, float blue, float alpha, Shader& shad);
+				static void drawText2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY, float red = 1.0f, float green = 1.0f, float blue = 1.0f, float alpha = 1.0f);
+				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY, float red = 1.0f, float green = 1.0f, float blue = 1.0f, float alpha = 1.0f);
+				static void drawTextLine2D(::X39::Singletons::FONT* mat, const char* s, float size, double uiPosX, double uiPosY, double maxWidth, float red = 1.0f, float green = 1.0f, float blue = 1.0f, float alpha = 1.0f);
+				static void drawTextLine2D(::X39::Singletons::FONT* mat, int strLen, const char* s, double uiPosX, double uiPosY, double uiWidth, double uiHeight, float red = 1.0f, float green = 1.0f, float blue = 1.0f, float alpha = 1.0f);
+				static void drawChar2D(::X39::Singletons::FONT* mat, const char c, double uiPosX, double uiPosY, double uiWidth, double uiHeight, float red = 1.0f, float green = 1.0f, float blue = 1.0f, float alpha = 1.0f);
 				
 				bool isFocused(void);
 				void setFocused(void);

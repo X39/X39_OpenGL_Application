@@ -33,6 +33,8 @@ namespace X39
 			unsigned int getCharTextureIndex(FONT* font, char c);
 
 			static FontManager& getInstance();
+		private:
+			void generateTextures(FONT* font);
 		};
 	};
 };

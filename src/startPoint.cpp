@@ -483,7 +483,7 @@ bool CheckForOpenGLErrors(void)
 bool debugSwitchMouseMode(int mode, USHORT key)
 {
 	if(mode == KEYEVENT_KEYDOWN && (key == ::EngineKeySet::KEY_F9 || key == ::EngineKeySet::KEY_F10))
-		::X39::Singletons::Mouse::getInstance().setMode(::X39::Singletons::Mouse::getInstance().getMode() == MOUSEMODE_GAMECAMERA ? MOUSEMODE_MENU : MOUSEMODE_GAMECAMERA);
+		::X39::Singletons::Mouse::getInstance().setMode(::X39::Singletons::Mouse::getInstance().getMode() == ::X39::Singletons::Mouse::MouseMode::Camera ? ::X39::Singletons::Mouse::MouseMode::Menu : ::X39::Singletons::Mouse::MouseMode::Camera);
 	return false;
 }
 void debugButtonTest(void)
@@ -644,19 +644,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LShift))
 				modificator = 1;
 
-			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_W))
-				vec.z -= 1 * modificator;
-			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_A))
-				vec.x -= 1 * modificator;
-			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_S))
-				vec.z += 1 * modificator;
-			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_D))
-				vec.x += 1 * modificator;
-			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_Spacebar))
-				vec.y += 1 * modificator;
-			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LCTRL))
-				vec.y -= 1 * modificator;
-
+			if (::X39::Singletons::Mouse::getInstance().getMode() == ::X39::Singletons::Mouse::MouseMode::Camera)
+			{
+				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_W))
+					vec.z -= 1 * modificator;
+				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_A))
+					vec.x -= 1 * modificator;
+				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_S))
+					vec.z += 1 * modificator;
+				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_D))
+					vec.x += 1 * modificator;
+				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_Spacebar))
+					vec.y += 1 * modificator;
+				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LCTRL))
+					vec.y -= 1 * modificator;
+			}
 			vec = viewMatrix * vec;
 			::X39::Singletons::Camera::getInstance().addPos(::glm::vec3(vec.x, vec.y, vec.z));
 #pragma endregion
@@ -719,16 +721,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			//2D projection
 			glPushMatrix();
 			glLoadIdentity();
-			glOrtho(0.0, ::X39::GlobalObject::getInstance().render_width, ::X39::GlobalObject::getInstance().render_height, 0.0, -1.0, 10.0);
 			glLoadIdentity();
 			glDisable(GL_CULL_FACE);
 			glClear(GL_DEPTH_BUFFER_BIT);
 			glm::vec3 camPos = ::X39::Singletons::Camera::getInstance().getPos();
 			char s[256];
-			//sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::Camera::getInstance().getPitch(), ::X39::Singletons::Camera::getInstance().getYaw(), ::X39::Singletons::Camera::getInstance().getRoll());
-			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1, 0, 0);
-//			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 1, 0, 0);
-			::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'A', -0.5, -0.5, ::X39::GlobalObject::getInstance().render_width * 1, ::X39::GlobalObject::getInstance().render_height * 2);
+			sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::Camera::getInstance().getPitch(), ::X39::Singletons::Camera::getInstance().getYaw(), ::X39::Singletons::Camera::getInstance().getRoll());
+			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1.5, 0, 0);
+
+			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), "abcdefghijklm\nnopqrstuvwxyz\nABCDEFGHIJKLM\nNOPQRSTUVWXYZ\n1234567890", 10, 0, 0);
+
+			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'A', 0, 0, 200, 200);
+			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'B', 200, 0, 200, 200);
+			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'C', 200, 200, 200, 200);
+			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'D', 0, 200, 200, 200);
+
 			//::X39::Singletons::FontManager::getInstance().fontShader.use();
 			//::X39::GUI::GuiBase::drawTexture2D(
 			//	::X39::Singletons::FontManager::getInstance().getFont(0)->material,
@@ -738,7 +745,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			//	::X39::Singletons::FontManager::getInstance().fontShader
 			//);
 			//::X39::Singletons::FontManager::getInstance().fontShader.unuse();
-			//::X39::GlobalObject::getInstance().mainDisplay->draw();
+			::X39::GlobalObject::getInstance().mainDisplay->draw();
 			glPopMatrix();
 
 			SwapBuffers(::X39::GlobalObject::getInstance().handleDeviceContext);

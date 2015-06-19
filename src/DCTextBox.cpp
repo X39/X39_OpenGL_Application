@@ -27,6 +27,7 @@ namespace X39
 			
 			::X39::Singletons::MATERIAL* mat = ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(1);
 			int textureIndex = 1;
+			getShader().use();
 			if(width < 16 || height < 16)
 			{
 				drawTexture2D(mat, textureIndex, 0, 0, mat->textures[0]->width, mat->textures[0]->height, posX, posY, width, height, getShader());
@@ -67,6 +68,7 @@ namespace X39
 					drawTexture2D(mat, textureIndex, 16, 64 - 16, 16, 16, posX + 16, posY + height - 16, width - 32, 16, getShader());
 				}
 			}
+			getShader().unuse();
 			if(!innerText.empty())
 				drawTextLine2D(::X39::Singletons::FontManager::getInstance().getFont(0), innerText.c_str(), height / FONTSIZEBASE, posX, posY, width);
 			if(deleteButtonPressed)

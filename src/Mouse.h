@@ -7,22 +7,28 @@ namespace X39
 {
 	namespace Singletons
 	{
-#define MOUSEMODE_GAMECAMERA 0
-#define MOUSEMODE_MENU 1
 		class Mouse
 		{
+			public:
+				enum MouseMode {
+					Camera,
+					Menu
+				};
+
+
 			private:
-				unsigned int mode;
+				MouseMode mode;
 				bool centered;
 				std::vector<bool ( *)(int, int, LPPOINT)> mouseMoveEventHandles;
 				std::vector<bool ( *)(LPPOINT, ULONG, USHORT)> mouseClickEventHandles;
 
 				Mouse(void);
 			public:
+
 				~Mouse(void);
 				static Mouse& getInstance(void);
-				void setMode(unsigned int m);
-				unsigned int getMode(void);
+				void setMode(MouseMode m);
+				MouseMode getMode(void);
 				void showPointer(bool flag);
 				void keepCenter();
 				void keepCenter(bool flag);

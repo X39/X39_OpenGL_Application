@@ -14,7 +14,7 @@ namespace X39
 	{
 		Mouse::Mouse(void)
 		{
-			setMode(MOUSEMODE_MENU);
+			setMode(MouseMode::Menu);
 			centered = false;
 		}
 
@@ -28,22 +28,22 @@ namespace X39
 			static Mouse instance;
 			return instance;
 		}
-		void Mouse::setMode(unsigned int m)
+		void Mouse::setMode(MouseMode m)
 		{
 			mode = m;
-			switch(mode)
+			switch (mode)
 			{
-				case MOUSEMODE_GAMECAMERA:
+				case MouseMode::Camera:
 					showPointer(false);
 					keepCenter(true);
 					break;
-				case MOUSEMODE_MENU:
+				case MouseMode::Menu:
 					showPointer(true);
 					keepCenter(false);
 					break;
 			}
 		}
-		unsigned int Mouse::getMode(void)
+		Mouse::MouseMode Mouse::getMode(void)
 		{
 			return mode;
 		}
@@ -74,7 +74,7 @@ namespace X39
 		}
 		void Mouse::handleMouseMove(int posX, int posY)
 		{
-			if(mode == MOUSEMODE_GAMECAMERA)
+			if (mode == MouseMode::Camera)
 			{
 				//printf("%i", invertPitch);
 				double yawModificator = posX * SENSITIVY;
@@ -92,7 +92,7 @@ namespace X39
 			}
 			
 			POINT p;
-			if(mode == MOUSEMODE_MENU)
+			if (mode == MouseMode::Menu)
 			{
 				if(!GetCursorPos(&p))
 				{
@@ -117,7 +117,7 @@ namespace X39
 		void Mouse::handleMouseButtonEvent(ULONG ulButtons, USHORT usButtonData)
 		{
 			POINT p;
-			if(mode == MOUSEMODE_MENU)
+			if (mode == MouseMode::Menu)
 			{
 				if(!GetCursorPos(&p))
 				{

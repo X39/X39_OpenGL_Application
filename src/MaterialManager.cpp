@@ -313,7 +313,7 @@ namespace X39
 			for(unsigned int i = 0; i < matList.size(); i++)
 			{
 				MATERIAL* m = matList[i];
-				if(m->vmatPath.compare(vmatPath))
+				if(!m->vmatPath.compare(vmatPath))
 				{
 					return m;
 				}

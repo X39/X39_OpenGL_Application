@@ -22,6 +22,7 @@ namespace X39
 		{
 			::X39::Singletons::MATERIAL* mat = &this->material;
 			int textureIndex = 0;
+			getShader().use();
 			if (width < 16 || height < 16)
 			{
 				drawTexture2D(mat, textureIndex, 0, 0, mat->textures[0]->width, mat->textures[0]->height, posX, posY, width, height, getShader());
@@ -62,8 +63,9 @@ namespace X39
 					drawTexture2D(mat, textureIndex, 16, 64 - 16, 16, 16, posX + 16, posY + height - 16, width - 32, 16, getShader());
 				}
 			}
+			getShader().unuse();
 			if(!displayText.empty())
-				drawTextLine2D(::X39::Singletons::FontManager::getInstance().getFont(0), displayText.length(), displayText.c_str(), posX, posY, width, height);
+				drawTextLine2D(::X39::Singletons::FontManager::getInstance().getFont(0), displayText.length(), displayText.c_str(), posX, posY, width, height, 0, 0, 0);
 		}
 		bool DCButton::e_mouseClick(LPPOINT mousePos, ULONG ulButtons, USHORT usButtonData)
 		{

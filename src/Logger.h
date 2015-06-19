@@ -35,7 +35,8 @@ public:
         WARNING,
         ERRORmsg,
         GL_ERROR,
-        EMPTY
+        EMPTY,
+		RAW
     };
  
     // start/stop logging
@@ -46,8 +47,9 @@ public:
  
     // write message
     static void Write(Priority priority, const POINT& d);
-    static void Write(Priority priority, const DWORD d);
-    static void Write(Priority priority, const double);
+	static void Write(Priority priority, const DWORD d);
+	static void Write(Priority priority, const double);
+	static void Write(Priority priority, const unsigned char);
 	static void Write(Priority priority, const std::string message);
     static void Write(Priority priority, const char* message);
  
