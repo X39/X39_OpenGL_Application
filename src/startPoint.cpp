@@ -5,6 +5,7 @@
 #include "DCTextBox.h"
 #include "Shader.h"
 #include "Model.h"
+#include "Simulation.h"
 
 
 #include <windows.h>
@@ -15,7 +16,8 @@
 #include <omp.h>
 #include <array>
 #include <mutex>
-
+static bool exitFlag = false;
+static int exitCode = 0;
 LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam ) 
 {
 	switch( message )
@@ -78,8 +80,12 @@ LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
 
 			if (raw->header.dwType == RIM_TYPEKEYBOARD) 
 			{
-				if(raw->data.keyboard.MakeCode == ::EngineKeySet::KEY_F1)
-					exit(0);
+				if (raw->data.keyboard.MakeCode == ::EngineKeySet::KEY_F1)
+				{
+
+					exitFlag = true;
+					exitCode = 0;
+				}
 #if _CAPTUREKEYBOARD
 	#if _DEBUGRAW
 				char s[32];
@@ -191,7 +197,8 @@ int createWindow(HINSTANCE hInstance, int iCmdShow)
 	{
 		//ERROR CODE FE001
 		MessageBox(::X39::GlobalObject::getInstance().windowHandle, (LPCWSTR)L"Could not get window size\nFatal Error 001", (LPCWSTR)L"FATAL ERROR - FE001", MB_OK | MB_ICONERROR);
-		exit(-1);
+		exitFlag = true;
+		exitCode = -1;
 	}
 	//setStyleBorderless();
 
@@ -563,9 +570,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\grass.vmat");
 	::X39::Singletons::MaterialManager::getInstance().registerTexture("Materials\\ui_base\\ui_base.vmat");
 	::X39::Singletons::FontManager::getInstance().registerFont("Fonts\\arial.ttf");
-	::X39::Shader shad;
-	shad.load("Shaders\\base.shad");
-	shad.compile();
 	::X39::Model model = ::X39::Model("Models\\test.obj");
 	model.loader_dotObj();
 	
@@ -574,183 +578,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	//::X39::Singletons::Camera::getInstance().setViewVec(glm::vec3(0.67156154, -0.35836795, 0.64851946));
 	//::X39::Singletons::Camera::getInstance().setPos(glm::vec3(-3.5397613, 6.5228815, -3.5409057));
 	::X39::Singletons::Camera::getInstance().setPos(glm::vec3(0, 0, 0));
-	GLuint vaoID;
-	glGenVertexArrays(1, &vaoID);
-	glBindVertexArray(vaoID);
-
-	GLuint vertBufferID, indexBufferID;
-	glGenBuffers(1, &vertBufferID);
-	glGenBuffers(1, &indexBufferID);
-
-	struct Vec2 { float x, y; };
-	struct Vec3 { float x, y, z; };
-	struct Vert { Vec3 pos; Vec2 tex; };
-
-	std::array<Vert, 8> cubeVerts = {{
-		{ {  0.4f,  0.4f,  0.4f }, { 1.0f, 0.0f } },//0
-		{ {  0.4f,  0.4f, -0.4f }, { 1.0f, 1.0f } },//1
-		{ {  0.4f, -0.4f, -0.4f }, { 0.0f, 1.0f } },//2
-		{ {  0.4f, -0.4f,  0.4f }, { 0.0f, 0.0f } },//3
-		{ { -0.4f,  0.4f,  0.4f }, { 0.0f, 0.0f } },//4
-		{ { -0.4f,  0.4f, -0.4f }, { 0.0f, 1.0f } },//5
-		{ { -0.4f, -0.4f, -0.4f }, { 1.0f, 1.0f } },//6
-		{ { -0.4f, -0.4f,  0.4f }, { 1.0f, 0.0f } }	//7
-	}};
-
-	std::array<unsigned int, 36> cubeIdxs = {{ 
-		0, 2, 1, 0, 3, 2, // Right
-		4, 5, 6, 4, 6, 7, // Left
-		0, 7, 3, 0, 4, 7, // Top
-		1, 6, 2, 1, 5, 6, // Bottom
-		0, 5, 1, 0, 4, 5, // Front
-		3, 7, 6, 3, 6, 2  // Back
-	}};
-
-	// Vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vertBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * cubeVerts.size(), cubeVerts.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0); // Matches layout (location = 0)
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), 0);
-	glEnableVertexAttribArray(1); // Matches layout (location = 1)
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (GLvoid*)sizeof(Vec3));
-
-	// Index buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * cubeIdxs.size(), cubeIdxs.data(), GL_STATIC_DRAW);
-	glBindVertexArray(0);
 	//start endless loop
-    while(true)
+	X39::Simulation& simulation = X39::Simulation::getInstance();
+	while (!exitFlag)
     {
 		frameTime = omp_get_wtime();
-        if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            if(msg.message == WM_QUIT)
-            {
-                break;
+		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			if(msg.message == WM_QUIT)
+			{
+				break;
             }
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
         else
 		{
-			renderingMutex.lock();
-			glm::mat4 viewMatrix = X39::Singletons::Camera::getInstance().recalculateViewPort();
-			glm::mat4 projectionMatrix = glm::perspective((float)45.0, (float)::X39::GlobalObject::getInstance().render_width / (float)::X39::GlobalObject::getInstance().render_height, 1.0f, 1000.0f);
-#pragma region CameraMovement
-			::glm::vec4 vec = ::glm::vec4(0.0f);
-			float pitch = (float)::X39::Singletons::Camera::getInstance().getPitch();
-			float yaw = (float)::X39::Singletons::Camera::getInstance().getYaw();
-			float modificator = 0.1F;
-			if(::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LShift))
-				modificator = 1;
-
-			if (::X39::Singletons::Mouse::getInstance().getMode() == ::X39::Singletons::Mouse::MouseMode::Camera)
-			{
-				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_W))
-					vec.z -= 1 * modificator;
-				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_A))
-					vec.x -= 1 * modificator;
-				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_S))
-					vec.z += 1 * modificator;
-				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_D))
-					vec.x += 1 * modificator;
-				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_Spacebar))
-					vec.y += 1 * modificator;
-				if (::X39::Singletons::KeyHandler::getInstance().isKeyPressed(::EngineKeySet::KEY_LCTRL))
-					vec.y -= 1 * modificator;
-			}
-			vec = viewMatrix * vec;
-			::X39::Singletons::Camera::getInstance().addPos(::glm::vec3(vec.x, vec.y, vec.z));
-#pragma endregion
-			glClearColor(0.25, 0.25, 0.25, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			//glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LEQUAL);
-			glShadeModel(GL_SMOOTH);
-			glEnable(GL_TEXTURE_COORD_ARRAY);
-			glEnable(GL_CULL_FACE);
-			glFrontFace(GL_CCW);
-			glCullFace(GL_BACK);
-			glEnable(GL_BLEND);
-			glEnable (GL_POINT_SMOOTH);
-			glEnable (GL_LINE_SMOOTH);
-			//http://wiki.delphigl.com/index.php/glBlendFunc for different examples
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-			
-			glPushMatrix();
-			::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0));
-			//::X39::Singletons::MaterialManager::getInstance().loadMaterial(::X39::Singletons::FontManager::getInstance().getFont(0)->material, ::X39::Singletons::FontManager::getInstance().getCharTextureIndex(::X39::Singletons::FontManager::getInstance().getFont(0), 'a'));
-			
-			shad.use();
-			for (float posX = 5; posX > -5; posX--)
-			{
-				for (float posY = 5; posY > -5; posY--)
-				{
-					for (float posZ = 5; posZ > -5; posZ--)
-					{
-						if ((posX != 0 || posY != 0 || posZ != 0))
-							continue;
-						//glTranslated(i - X39::Singletons::Camera::getInstance().getPos().x, 0 - X39::Singletons::Camera::getInstance().getPos().y, j - X39::Singletons::Camera::getInstance().getPos().z);
-						glBindVertexArray(vaoID);
-						shad.setUniformMatrix4fv("viewMatrix", 1, GL_FALSE, &viewMatrix[0][0], -1);
-						shad.setUniformMatrix4fv("projectionMatrix", 1, GL_FALSE, &projectionMatrix[0][0], -1);
-						shad.setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, &glm::mat4()[0][0], 0);
-						shad.setUniform3fv("worldPosition", 1, &glm::vec3(
-							posX - X39::Singletons::Camera::getInstance().getPos().x,
-							posY - X39::Singletons::Camera::getInstance().getPos().y,
-							posZ - X39::Singletons::Camera::getInstance().getPos().z
-							)[0], 0); 
-						//shad.setUniform4fv("color", 1, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0], -1);
-						shad.setUniform1i("textureSampler", ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0)->textures[0]->textureUnit, 0);
-						
-						//shad.setUniform1iv("textureSampler", 1, (GLint*)&(::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0)->textures[0]->textureUnit), 0);
-						CheckForOpenGLErrors();
-						glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-						glBindVertexArray(0);
-					}
-				}
-			}
-			shad.unuse();
-			glPopMatrix();
-
-			//2D projection
-			glPushMatrix();
-			glLoadIdentity();
-			glLoadIdentity();
-			glDisable(GL_CULL_FACE);
-			glClear(GL_DEPTH_BUFFER_BIT);
-			glm::vec3 camPos = ::X39::Singletons::Camera::getInstance().getPos();
-			char s[256];
-			sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::Camera::getInstance().getPitch(), ::X39::Singletons::Camera::getInstance().getYaw(), ::X39::Singletons::Camera::getInstance().getRoll());
-			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1.5, 0, 0);
-
-			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), "abcdefghijklm\nnopqrstuvwxyz\nABCDEFGHIJKLM\nNOPQRSTUVWXYZ\n1234567890", 10, 0, 0);
-
-			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'A', 0, 0, 200, 200);
-			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'B', 200, 0, 200, 200);
-			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'C', 200, 200, 200, 200);
-			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'D', 0, 200, 200, 200);
-
-			//::X39::Singletons::FontManager::getInstance().fontShader.use();
-			//::X39::GUI::GuiBase::drawTexture2D(
-			//	::X39::Singletons::FontManager::getInstance().getFont(0)->material,
-			//	::X39::Singletons::FontManager::getInstance().getCharTextureIndex(::X39::Singletons::FontManager::getInstance().getFont(0), 'A'),
-			//	0, 0, 16, 16,
-			//	0, 0, 256, 256,
-			//	::X39::Singletons::FontManager::getInstance().fontShader
-			//);
-			//::X39::Singletons::FontManager::getInstance().fontShader.unuse();
-			::X39::GlobalObject::getInstance().mainDisplay->draw();
-			glPopMatrix();
-
-			SwapBuffers(::X39::GlobalObject::getInstance().handleDeviceContext);
-			CheckForOpenGLErrors();
-			renderingMutex.unlock();
+			simulation.doRendering();
         }
 		frameTime = omp_get_wtime() - frameTime;
 		if(tickOut > 1 / frameTime)
@@ -760,6 +604,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 		}
 		tickOut++;
     }
+	
     #pragma endregion
 
     return msg.wParam;

@@ -40,7 +40,7 @@ namespace X39
 		stream.open(path, std::fstream::in);
 		if(stream.fail())
 		{
-			LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', cannot read vertexShader file"));
+			LOGGER_WRITE(::Logger::ERRORmsg, std::string("\terror while parsing '").append(path).append("', cannot read model (.obj) file"));
 			stream.close();
 			return;
 		}

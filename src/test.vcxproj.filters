@@ -25,6 +25,27 @@
     <Filter Include="Quelldateien\include">
       <UniqueIdentifier>{e5012625-1a66-459d-9f16-7a7de1a661ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\EntitieSystem">
+      <UniqueIdentifier>{3c4f5de2-3057-47e5-95d1-4d235ca02f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\EntitieSystem\BaseClasses">
+      <UniqueIdentifier>{6088a782-0770-4c8b-81e3-d59e79d0b5ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\Singletons">
+      <UniqueIdentifier>{7c96765b-f8f2-4da5-a1a5-ab2d1093581a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\DefineHeaders">
+      <UniqueIdentifier>{4d3f71f8-6538-4f40-b973-33ac328d33af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\ThreadPool">
+      <UniqueIdentifier>{4c983770-6687-43e2-8193-46733b56f4a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\Singletons">
+      <UniqueIdentifier>{01c35892-1cc7-4abf-bbf8-d64eb605f83b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\ThreadPool">
+      <UniqueIdentifier>{b1392fca-f258-4a37-bd71-7e274bbff931}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="startPoint.cpp">
@@ -36,22 +57,7 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="Mouse.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="KeyHandler.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialManager.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="ConsoleStream.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="GlobalObject.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="DisplayBase.cpp">
@@ -62,9 +68,6 @@
     </ClCompile>
     <ClCompile Include="DCButton.cpp">
       <Filter>Quelldateien\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="FontManager.cpp">
-      <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="..\include\internal\CommandHandler\CommandHandler.cpp">
       <Filter>Quelldateien</Filter>
@@ -87,7 +90,34 @@
     <ClCompile Include="DCTextBox.cpp">
       <Filter>Quelldateien\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="DCListBox.cpp">
+      <Filter>Quelldateien\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Simulation.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
     <ClCompile Include="Camera.cpp">
+      <Filter>Quelldateien\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="FontManager.cpp">
+      <Filter>Quelldateien\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalObject.cpp">
+      <Filter>Quelldateien\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyHandler.cpp">
+      <Filter>Quelldateien\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialManager.cpp">
+      <Filter>Quelldateien\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="Mouse.cpp">
+      <Filter>Quelldateien\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="PoolThread.cpp">
+      <Filter>Quelldateien\ThreadPool</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -680,28 +710,7 @@
     <ClInclude Include="Logger.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="Mouse.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyHandler.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyDefines.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyEventCodes.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialManager.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="ConsoleStream.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="GlobalObject.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="DisplayBase.h">
@@ -713,9 +722,6 @@
     <ClInclude Include="DCButton.h">
       <Filter>Headerdateien\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="FontManager.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\internal\CommandHandler\CommandHandler.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -725,7 +731,52 @@
     <ClInclude Include="DCTextBox.h">
       <Filter>Headerdateien\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="DCListBox.h">
+      <Filter>Headerdateien\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityBase.h">
+      <Filter>Headerdateien\EntitieSystem\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderBase.h">
+      <Filter>Headerdateien\EntitieSystem\BaseClasses</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializeBase.h">
+      <Filter>Headerdateien\EntitieSystem\BaseClasses</Filter>
+    </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>Headerdateien\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="FontManager.h">
+      <Filter>Headerdateien\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalObject.h">
+      <Filter>Headerdateien\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="Mouse.h">
+      <Filter>Headerdateien\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="Simulation.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialManager.h">
+      <Filter>Headerdateien\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyHandler.h">
+      <Filter>Headerdateien\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyDefines.h">
+      <Filter>Headerdateien\DefineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyEventCodes.h">
+      <Filter>Headerdateien\DefineHeaders</Filter>
+    </ClInclude>
+    <ClInclude Include="PoolThread.h">
+      <Filter>Headerdateien\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseTask.h">
+      <Filter>Headerdateien\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

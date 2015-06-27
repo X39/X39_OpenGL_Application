@@ -132,8 +132,8 @@
     <ClCompile Include="..\include\internal\dotX39\DocumentReader.cpp" />
     <ClCompile Include="..\include\internal\dotX39\DocumentWriter.cpp" />
     <ClCompile Include="..\include\internal\dotX39\Node.cpp" />
-    <ClCompile Include="ConsoleStream.cpp" />
     <ClCompile Include="DCButton.cpp" />
+    <ClCompile Include="DCListBox.cpp" />
     <ClCompile Include="DCTextBox.cpp" />
     <ClCompile Include="DisplayBase.cpp" />
     <ClCompile Include="FontManager.cpp" />
@@ -145,7 +145,10 @@
     <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="PoolThread.cpp" />
+    <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="startPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -343,15 +346,17 @@
     <ClInclude Include="..\include\external\SDL\SDL_video.h" />
     <ClInclude Include="..\include\internal\CommandHandler\CommandHandler.h" />
     <ClInclude Include="..\include\internal\dotX39\ISettingsFileHandler.h" />
-    <ClInclude Include="ConsoleStream.h" />
     <ClInclude Include="DCButton.h" />
+    <ClInclude Include="DCListBox.h" />
     <ClInclude Include="DCTextBox.h" />
     <ClInclude Include="DisplayBase.h" />
+    <ClInclude Include="EntityBase.h" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GlobalObject.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="GuiBase.h" />
+    <ClInclude Include="BaseTask.h" />
     <ClInclude Include="KeyDefines.h" />
     <ClInclude Include="KeyEventCodes.h" />
     <ClInclude Include="KeyHandler.h" />
@@ -359,7 +364,12 @@
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
+    <ClInclude Include="PoolThread.h" />
+    <ClInclude Include="RenderBase.h" />
+    <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="SerializeBase.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Simulation.h" />
     <ClInclude Include="startPoint.h" />
   </ItemGroup>
   <ItemGroup>

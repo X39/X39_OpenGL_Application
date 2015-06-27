@@ -1,0 +1,7 @@
+addon
+{
+	name = "testAddon";
+	version = "1.0";
+	author = "X39";
+	mainFile = "squirrel\main.nut";
+}
