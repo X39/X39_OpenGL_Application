@@ -1,4 +1,6 @@
 #pragma once
+#include "RenderBase.h"
+#include <vector>
 namespace X39
 {
 	namespace Singletons
@@ -8,6 +10,7 @@ namespace X39
 		private:
 			RenderManager();
 			~RenderManager();
+			std::vector<::X39::Entity::RenderBase*> _entityList;
 		public:
 			static inline RenderManager& getInstance(void)
 			{
@@ -16,6 +19,8 @@ namespace X39
 			}
 			void prepare(void);
 			void doRendering(void);
+			void addEntity(::X39::Entity::RenderBase* ent);
+			void removeEntity(::X39::Entity::RenderBase* ent);
 		};
 	}
 }

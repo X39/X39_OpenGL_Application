@@ -207,7 +207,7 @@ namespace X39
 			bitmaps.clear();
 		}
 
-		unsigned int FontManager::getCharTextureIndex(FONT* font, char c)
+		unsigned int FontManager::getCharTextureIndex(FONT* font, unsigned char c)
 		{
 			if(font->material->textures.size() <= c)
 			{

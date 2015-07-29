@@ -11,6 +11,8 @@
 namespace X39 {
 
 	std::vector<Threading::PoolThread*> threadPool;
+	std::vector<Entity::EntityBase*> _entityList;
+	std::vector<Entity::EntityBase*> _dropList;
 	std::queue<Threading::BaseTask*> toDoTaskList;
 	std::mutex taskMutex;
 
@@ -75,5 +77,36 @@ namespace X39 {
 	void Simulation::setTaskAsDone(Threading::BaseTask* task)
 	{
 		delete task;
+	}
+	void Simulation::addEntity(Entity::EntityBase* ent)
+	{
+		_entityList.push_back(ent);
+	}
+	void Simulation::performEntityDrop(void)
+	{
+		taskMutex.lock();
+		for (int i = 0; i < _entityList.size(); i++)
+		{
+			for (int j = 0; j < _dropList.size(); j++)
+			{
+				if (_entityList[i] == _dropList[j])
+				{
+					_entityList[i] = _entityList.back();
+					_entityList.pop_back();
+					_dropList[i] = _dropList.back();
+					_dropList.pop_back();
+					break;
+				}
+			}
+		}
+		taskMutex.unlock();
+	}
+	void Simulation::removeEntity(Entity::EntityBase* ent)
+	{
+		_dropList.push_back(ent);
+	}
+	const std::vector<::X39::Entity::EntityBase*>& Simulation::getEntityList(void)
+	{
+		return _entityList;
 	}
 }

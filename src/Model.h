@@ -16,6 +16,7 @@ namespace X39
 		//Variables
 		private:
 			std::string path;
+		//Functions
 		private:
 			void init(const std::string s);
 			void loadModelFromDrive(void);

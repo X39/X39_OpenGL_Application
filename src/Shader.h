@@ -26,6 +26,22 @@ namespace X39
 			bool compiled;
 
 		public:
+			static Shader* getShader(std::string path)
+			{
+				static std::vector <Shader*> loadedShaders;
+				for (auto& it : loadedShaders)
+				{
+					if (it->fileName.compare(path) == 0)
+						return it;
+				}
+				Shader* shad = new Shader();
+				if (!shad->load(path))
+					throw std::exception("Failed to load shader");
+				if (!shad->compile())
+					throw std::exception("Failed to compile shader");
+				loadedShaders.push_back(shad);
+				return shad;
+			}
 			Shader(void);
 			~Shader(void);
 

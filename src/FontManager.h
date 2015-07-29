@@ -30,7 +30,7 @@ namespace X39
 
 			FONT* getFont(unsigned int index);
 			
-			unsigned int getCharTextureIndex(FONT* font, char c);
+			unsigned int getCharTextureIndex(FONT* font, unsigned char c);
 
 			static FontManager& getInstance();
 		private:

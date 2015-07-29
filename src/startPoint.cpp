@@ -6,6 +6,8 @@
 #include "Shader.h"
 #include "Model.h"
 #include "Simulation.h"
+#include "NormalizedEntity.h"
+#include "EntityUpdateTask.h"
 
 
 #include <windows.h>
@@ -555,10 +557,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 
     #pragma region message loop
     MSG msg;
-	DWORD framerateHelper_last = GetTickCount();
-	double frameTime = 0;
-	int tickOut = 0;
-
 	
 	::X39::Singletons::KeyHandler::getInstance().registerEventHandler(doDisplayKeyHandling);
 	::X39::Singletons::Mouse::getInstance().registerEventHandler(doDisplayMouseClickHandling);
@@ -580,9 +578,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	::X39::Singletons::Camera::getInstance().setPos(glm::vec3(0, 0, 0));
 	//start endless loop
 	X39::Simulation& simulation = X39::Simulation::getInstance();
+	simulation.init();
+	for (int i = 0; i < 100; i++)
+		new X39::Entity::NormalizedEntity(i);
+
+	(new X39::Entity::NormalizedEntity(-2))->setEnableMovement(false);
+
 	while (!exitFlag)
     {
-		frameTime = omp_get_wtime();
 		if(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if(msg.message == WM_QUIT)
@@ -595,15 +598,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
         else
 		{
 			simulation.doRendering();
+
+
+			//Add entity update tasks to scheduler
+			auto& entityList = simulation.getEntityList();
+			size_t entityListSize = entityList.size();
+			const size_t maxEntsPerTask = 100;
+			for (size_t i = 0; i < entityListSize; i += maxEntsPerTask)
+				simulation.addTask(new ::X39::Threading::EntityUpdateTask(simulation.getEntityList(), i, (i + maxEntsPerTask > entityListSize ? entityListSize : i + maxEntsPerTask)));
+
+			simulation.performEntityDrop();
         }
-		frameTime = omp_get_wtime() - frameTime;
-		if(tickOut > 1 / frameTime)
-		{
-			tickOut = 0;
-			LOGGER_WRITE(::Logger::FPS, 1 / frameTime);
-		}
-		tickOut++;
-    }
+	}
+	simulation.uninit();
 	
     #pragma endregion
 

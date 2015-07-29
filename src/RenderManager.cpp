@@ -1,12 +1,21 @@
 #include "RenderManager.h"
 #include "globals.h"
+#include "Simulation.h"
+#include "RenderBase.h"
 #include <array>
+#include <omp.h>
 
 
 namespace X39
 {
 	namespace Singletons
 	{
+		GLuint test_vaoID;
+		GLuint test_vertBufferID;
+		GLuint test_indexBufferID;
+		::X39::Shader test_shad;
+		::X39::Simulation& simulation = ::X39::Simulation::getInstance();
+
 		RenderManager::RenderManager()
 		{
 		}
@@ -14,11 +23,23 @@ namespace X39
 		{
 		}
 
-		GLuint test_vaoID;
-		GLuint test_vertBufferID;
-		GLuint test_indexBufferID;
-		::X39::Shader test_shad;
 
+		void RenderManager::addEntity(::X39::Entity::RenderBase* ent)
+		{
+			this->_entityList.push_back(ent);
+		}
+		void RenderManager::removeEntity(::X39::Entity::RenderBase* ent)
+		{
+			for (int i = 0; i < this->_entityList.size(); i++)
+			{
+				if (this->_entityList[i] == ent)
+				{
+					this->_entityList[i] = this->_entityList.back();
+					this->_entityList.pop_back();
+					break;
+				}
+			}
+		}
 		void RenderManager::prepare(void)
 		{
 			glGenVertexArrays(1, &test_vaoID);
@@ -68,6 +89,7 @@ namespace X39
 		}
 		void RenderManager::doRendering(void)
 		{
+			auto frameTime = omp_get_wtime();
 			glm::mat4 viewMatrix = X39::Singletons::Camera::getInstance().recalculateViewPort();
 			glm::mat4 projectionMatrix = glm::perspective((float)45.0, (float)::X39::GlobalObject::getInstance().render_width / (float)::X39::GlobalObject::getInstance().render_height, 1.0f, 1000.0f);
 #pragma region CameraMovement
@@ -151,6 +173,12 @@ namespace X39
 			}
 			test_shad.unuse();
 			glPopMatrix();
+			glPushMatrix();
+			for (auto& it : this->_entityList)
+			{
+				it->doRender();
+			}
+			glPopMatrix();
 
 			//2D projection
 			glPushMatrix();
@@ -163,6 +191,10 @@ namespace X39
 			sprintf(s, "POS: %lf, %lf, %lf\nPITCH: %lf, YAW: %lf, ROLL %lf", camPos.x, camPos.y, camPos.z, ::X39::Singletons::Camera::getInstance().getPitch(), ::X39::Singletons::Camera::getInstance().getYaw(), ::X39::Singletons::Camera::getInstance().getRoll());
 			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1.5, 0, 0);
 
+			//char s[256];
+			frameTime = omp_get_wtime() - frameTime;
+			sprintf(s, "FPS: %i", (int)(1 / frameTime));
+			::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), s, 1.5, 0, 500);
 			//::X39::GUI::GuiBase::drawText2D(::X39::Singletons::FontManager::getInstance().getFont(0), "abcdefghijklm\nnopqrstuvwxyz\nABCDEFGHIJKLM\nNOPQRSTUVWXYZ\n1234567890", 10, 0, 0);
 
 			//::X39::GUI::GuiBase::drawChar2D(::X39::Singletons::FontManager::getInstance().getFont(0), 'A', 0, 0, 200, 200);

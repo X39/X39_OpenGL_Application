@@ -7,6 +7,16 @@
 
 namespace X39
 {
+	GLuint vaoId;
+	GLuint vertexBufferId;
+	GLuint indexBufferId;
+	std::vector<double> vertexList;
+	std::vector<double> textureList;
+	std::vector<double> normalsList;
+	std::vector<double> vertexIndexList;
+	std::vector<double> textureIndexList;
+	std::vector<double> normalsIndexList;
+
 	Model::Model(const char* s)			{ init(std::string(s)); }
 	Model::Model(const ::std::string s)	{ init(s); }
 	void Model::init(const std::string s)
@@ -30,12 +40,6 @@ namespace X39
 		double value;
 		std::fstream stream;
 		char buffer[256];
-		std::vector<double> vertexList;
-		std::vector<double> textureList;
-		std::vector<double> normalsList;
-		std::vector<double> vertexIndexList;
-		std::vector<double> textureIndexList;
-		std::vector<double> normalsIndexList;
 
 		stream.open(path, std::fstream::in);
 		if(stream.fail())
@@ -79,7 +83,7 @@ namespace X39
 					case 't'://vt <float X> <float Y> description of a single texture vertex.
 						tempStr = buffer;
 						value = 0;
-						for(int i = 0; i < 3; i++)
+						for(int i = 0; i < 2; i++)
 						{
 							tempStr = strchr(tempStr + 1, ' ');
 							if(!::CommandHandler::convAsciiCharToDouble(tempStr, &value))
@@ -172,6 +176,28 @@ namespace X39
 
 	void Model::loadToGpu(void)
 	{
+		glGenVertexArrays(1, &vaoId);
+		glBindVertexArray(vaoId);
+
+		glGenBuffers(1, &vertexBufferId);
+		glGenBuffers(1, &indexBufferId);
+
+		struct Vec2 { float x, y; };
+		struct Vec3 { float x, y, z; };
+		struct Vert { Vec3 pos; Vec2 tex; };
+
+		// Vertex buffer
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vert) * vertexList.size(), vertexList.data(), GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0); // Matches layout (location = 0)
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), 0);
+		glEnableVertexAttribArray(1); // Matches layout (location = 1)
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (GLvoid*)sizeof(Vec3));
+
+		// Index buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * vertexIndexList.size(), vertexIndexList.data(), GL_STATIC_DRAW);
+		glBindVertexArray(0);
 	}
 
 	void Model::unloadFromGpu(void)

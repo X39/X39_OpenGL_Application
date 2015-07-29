@@ -73,7 +73,7 @@ namespace X39
 			if(deleteButtonPressed)
 			{
 				deleteButtonPressedTimeout++;
-				if(deleteButtonPressedTimeout > 25)
+				if(deleteButtonPressedTimeout > 22)
 				{
 					deleteButtonPressedTimeout = 20;
 					if(innerText.size() > 0)

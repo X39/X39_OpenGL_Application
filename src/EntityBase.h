@@ -6,15 +6,13 @@ namespace X39
 	{
 		class EntityBase
 		{
-		private:
-			bool _isRenderable;
-			bool _isSerializable;
 		public:
-			EntityBase(bool isRenderable = false, bool isSerializable = false) : _isRenderable(isRenderable), _isSerializable(isSerializable) {}
-			inline bool isRenderable() const { return this->_isRenderable; }
-			inline bool isSerializable() const { return this->_isSerializable; }
-
+			EntityBase();
+			~EntityBase();
+			virtual void kill() final;
 			virtual void update() = 0;
+			virtual bool isVisible() = 0;
+			virtual void onKill() {};
 		};
 	}
 }

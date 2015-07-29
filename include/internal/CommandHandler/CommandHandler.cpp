@@ -98,6 +98,8 @@
 		const char* numbers = NULL;
 		int numberLength = -1;
 		int dotSpot = -1;
+		if (s == nullptr)
+			return false;
 		if(s[0] != 0x00 && s[1] != 0x00 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
 		{//HEX
 			//Do we got faked here? Validating that AT LEAST 1 HEXA digit is used after the 0x
