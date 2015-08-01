@@ -28,9 +28,9 @@ namespace X39
 				test_shad->setUniformMatrix4fv("projectionMatrix", 1, GL_FALSE, &projectionMatrix[0][0], -1);
 				test_shad->setUniformMatrix4fv("modelMatrix", 1, GL_FALSE, &glm::mat4()[0][0], 0);
 				test_shad->setUniform3fv("worldPosition", 1, &glm::vec3(
-					this->_positionX - X39::Singletons::Camera::getInstance().getPos().x,
-					this->_positionY - X39::Singletons::Camera::getInstance().getPos().y,
-					this->_positionZ - X39::Singletons::Camera::getInstance().getPos().z
+					this->_position.x - X39::Singletons::Camera::getInstance().getPos().x,
+					this->_position.y - X39::Singletons::Camera::getInstance().getPos().y,
+					this->_position.z - X39::Singletons::Camera::getInstance().getPos().z
 					)[0], 0);
 				//shad.setUniform4fv("color", 1, &glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)[0], -1);
 				test_shad->setUniform1i("textureSampler", ::X39::Singletons::MaterialManager::getInstance().getMaterialByIndex(0)->textures[0]->textureUnit, 0);
@@ -104,7 +104,7 @@ namespace X39
 			}
 			virtual void onUpdate()
 			{
-				if (this->_positionX > this->_positionZ * 2 || this->_positionX < -(this->_positionZ * 2))
+				if (this->_position.x > this->_position.z * 2 || this->_position.x < -(this->_position.z * 2))
 				{
 					this->_moveX *= -1;
 				}

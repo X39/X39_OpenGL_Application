@@ -1,14 +1,17 @@
 #pragma once
 #include "BaseTask.h"
 #include "EntityBase.h"
+#include "WorldBase.h"
 #include <vector>
 namespace X39 {
 	class Simulation final
 	{
 	private:
 		void prepareThreadPool();
+		::X39::WorldBase* currentWorld;
 		Simulation()
 		{
+			currentWorld = nullptr;
 		}
 		~Simulation()
 		{
@@ -30,5 +33,6 @@ namespace X39 {
 		void Simulation::performEntityDrop(void);
 		void init(void);
 		void uninit(void);
+		void setWorld(::X39::WorldBase*);
 	};
 }

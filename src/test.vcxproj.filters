@@ -52,6 +52,9 @@
     <Filter Include="Quelldateien\EntitiySystem\BaseClasses">
       <UniqueIdentifier>{f16c3374-4b3e-49ec-80a5-37dd5222221a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\World">
+      <UniqueIdentifier>{4b5e076e-7710-48f3-90b3-e585457d8efe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="startPoint.cpp">
@@ -799,6 +802,12 @@
     </ClInclude>
     <ClInclude Include="EntityUpdateTask.h">
       <Filter>Headerdateien\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldBase.h">
+      <Filter>Headerdateien\World</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>Headerdateien\World</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

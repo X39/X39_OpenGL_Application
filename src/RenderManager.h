@@ -1,5 +1,6 @@
 #pragma once
 #include "RenderBase.h"
+#include "WorldBase.h"
 #include <vector>
 namespace X39
 {
@@ -21,6 +22,7 @@ namespace X39
 			void doRendering(void);
 			void addEntity(::X39::Entity::RenderBase* ent);
 			void removeEntity(::X39::Entity::RenderBase* ent);
+			void setWorld(::X39::WorldBase*);
 		};
 	}
 }

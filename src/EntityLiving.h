@@ -5,12 +5,16 @@ namespace X39
 {
 	namespace Entity
 	{
+		struct position3D
+		{
+			long double x;
+			long double y;
+			long double z;
+		};
 		class EntityLiving : public EntityBase
 		{
 		protected:
-			double _positionX;
-			double _positionY;
-			double _positionZ;
+			position3D _position;
 			double _moveX;
 			double _moveY;
 			double _moveZ;
@@ -22,9 +26,9 @@ namespace X39
 		public:
 			EntityLiving(double posX = 0, double posY = 0, double posZ = 0, double moveX = 0, double moveY = 0, double moveZ = 0, double gravityX = 0, double gravityY = 0, double gravityZ = 0) : EntityBase()
 			{
-				this->_positionX = posX;
-				this->_positionY = posY;
-				this->_positionZ = posZ;
+				this->_position.x = posX;
+				this->_position.y = posY;
+				this->_position.z = posZ;
 				this->_moveX = moveX;
 				this->_moveY = moveY;
 				this->_moveZ = moveZ;
@@ -37,9 +41,9 @@ namespace X39
 			{
 				if (_enableMovement)
 				{
-					this->_positionX += this->_moveX;
-					this->_positionY += this->_moveY;
-					this->_positionZ += this->_moveZ;
+					this->_position.x += this->_moveX;
+					this->_position.y += this->_moveY;
+					this->_position.z += this->_moveZ;
 					this->_moveX -= this->_gravityX;
 					this->_moveY -= this->_gravityY;
 					this->_moveZ -= this->_gravityZ;
@@ -53,6 +57,22 @@ namespace X39
 			virtual bool getEnableMovement(void) const final
 			{
 				return this->_enableMovement;
+			}
+			virtual position3D& getPosition()
+			{
+				return this->_position;
+			}
+			virtual void setPosition(const position3D& p)
+			{
+				this->_position.x = p.x;
+				this->_position.y = p.y;
+				this->_position.z = p.z;
+			}
+			virtual void setPosition(double x, double y, double z)
+			{
+				this->_position.x = x;
+				this->_position.y = y;
+				this->_position.z = z;
 			}
 
 

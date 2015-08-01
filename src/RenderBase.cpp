@@ -14,6 +14,9 @@
 void ::X39::Entity::RenderBase::doRender()
 {
 	if (!this->_isLoaded)
+	{
 		this->loadRenderer();
+		this->_isLoaded = true;
+	}
 	this->render();
 }

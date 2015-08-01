@@ -365,6 +365,7 @@
     <ClInclude Include="KeyEventCodes.h" />
     <ClInclude Include="KeyHandler.h" />
     <ClInclude Include="Logger.h" />
+    <ClInclude Include="MainMenu.h" />
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
@@ -376,6 +377,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="startPoint.h" />
+    <ClInclude Include="WorldBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\external\glm\core\func_common.inl" />

@@ -8,6 +8,7 @@
 #include "Simulation.h"
 #include "NormalizedEntity.h"
 #include "EntityUpdateTask.h"
+#include "MainMenu.h"
 
 
 #include <windows.h>
@@ -582,7 +583,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	for (int i = 0; i < 100; i++)
 		new X39::Entity::NormalizedEntity(i);
 
-	(new X39::Entity::NormalizedEntity(-2))->setEnableMovement(false);
+	auto ne = new X39::Entity::NormalizedEntity(0);
+	ne->setEnableMovement(false);
+	ne->setPosition(0, 0, -2);
+	::X39::MainMenu world = ::X39::MainMenu();
+	simulation.setWorld(&world);
 
 	while (!exitFlag)
     {

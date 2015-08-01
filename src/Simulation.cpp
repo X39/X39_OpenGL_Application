@@ -109,4 +109,17 @@ namespace X39 {
 	{
 		return _entityList;
 	}
+	void Simulation::setWorld(::X39::WorldBase* world)
+	{
+		if (currentWorld != nullptr)
+		{
+			currentWorld->destroyWorld();
+			delete currentWorld;
+		}
+		currentWorld = world;
+		if (currentWorld != nullptr)
+		{
+			currentWorld->prepareWorld();
+		}
+	}
 }
