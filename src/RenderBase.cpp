@@ -5,7 +5,7 @@
 	::X39::Singletons::RenderManager::getInstance().addEntity(this);
 	this->_isLoaded = false;
 }
-::X39::Entity::RenderBase::~RenderBase()
+void ::X39::Entity::RenderBase::deconstructRenderer(void)
 {
 	::X39::Singletons::RenderManager::getInstance().removeEntity(this);
 	if (this->_isLoaded)

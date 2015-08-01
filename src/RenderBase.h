@@ -10,7 +10,7 @@ namespace X39
 			bool _isLoaded;
 		public:
 			RenderBase();
-			~RenderBase();
+			virtual void deconstructRenderer(void) final;
 			virtual void doRender() final;
 			virtual void render() = 0;
 			virtual void loadRenderer() {};

@@ -502,14 +502,20 @@ void debugButtonTest(void)
 }
 bool doDisplayKeyHandling(int mode, USHORT key)
 {
+	if (!::X39::GlobalObject::getInstance().mainDisplay)
+		return false;
 	return ::X39::GlobalObject::getInstance().mainDisplay->keyPressed(mode, key);
 }
 bool doDisplayMouseClickHandling(LPPOINT point, ULONG ulButtons, USHORT usButtonData)
 {
+	if (!::X39::GlobalObject::getInstance().mainDisplay)
+		return false;
 	return ::X39::GlobalObject::getInstance().mainDisplay->mouseClick(point, ulButtons, usButtonData);
 }
 bool doDisplayMouseMoveHandling(int posX, int posY, LPPOINT mousePos)
 {
+	if (!::X39::GlobalObject::getInstance().mainDisplay)
+		return false;
 	return ::X39::GlobalObject::getInstance().mainDisplay->mouseMove(posX, posY, mousePos);
 }
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow)
@@ -552,7 +558,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	}
 
 	::X39::GlobalObject::getInstance().mainDisplay = new ::X39::GUI::GuiBase();
-	
+
 	RECT rect = GetDesktopResolution();
 	resizeWindow(0, 0, rect.right, rect.bottom);
 
@@ -572,22 +578,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 	::X39::Model model = ::X39::Model("Models\\test.obj");
 	model.loader_dotObj();
 	
-	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCButton(0, ::X39::GlobalObject::getInstance().render_height - 200, 160, 20, debugButtonTest, std::string("testButton"), *::X39::Singletons::MaterialManager::getInstance().getMaterialByVmatPath("Materials\\ui_base\\ui_base.vmat"), 0));
-	::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCTextBox(0, ::X39::GlobalObject::getInstance().render_height - 40, ::X39::GlobalObject::getInstance().render_width / 2, 20, std::string()));
+	//::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCButton(0, ::X39::GlobalObject::getInstance().render_height - 200, 160, 20, debugButtonTest, std::string("testButton"), *::X39::Singletons::MaterialManager::getInstance().getMaterialByVmatPath("Materials\\ui_base\\ui_base.vmat"), 0));
+	//::X39::GlobalObject::getInstance().mainDisplay->addChild(new ::X39::GUI::DCTextBox(0, ::X39::GlobalObject::getInstance().render_height - 40, ::X39::GlobalObject::getInstance().render_width / 2, 20, std::string()));
 	//::X39::Singletons::Camera::getInstance().setViewVec(glm::vec3(0.67156154, -0.35836795, 0.64851946));
 	//::X39::Singletons::Camera::getInstance().setPos(glm::vec3(-3.5397613, 6.5228815, -3.5409057));
 	::X39::Singletons::Camera::getInstance().setPos(glm::vec3(0, 0, 0));
 	//start endless loop
 	X39::Simulation& simulation = X39::Simulation::getInstance();
 	simulation.init();
-	for (int i = 0; i < 100; i++)
-		new X39::Entity::NormalizedEntity(i);
-
-	auto ne = new X39::Entity::NormalizedEntity(0);
-	ne->setEnableMovement(false);
-	ne->setPosition(0, 0, -2);
-	::X39::MainMenu world = ::X39::MainMenu();
-	simulation.setWorld(&world);
+	simulation.setWorld(new ::X39::MainMenu());
 
 	while (!exitFlag)
     {
@@ -602,6 +601,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
         }
         else
 		{
+			simulation.performEntityDrop();
 			simulation.doRendering();
 
 
@@ -612,7 +612,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			for (size_t i = 0; i < entityListSize; i += maxEntsPerTask)
 				simulation.addTask(new ::X39::Threading::EntityUpdateTask(simulation.getEntityList(), i, (i + maxEntsPerTask > entityListSize ? entityListSize : i + maxEntsPerTask)));
 
-			simulation.performEntityDrop();
         }
 	}
 	simulation.uninit();

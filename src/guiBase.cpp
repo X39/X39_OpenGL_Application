@@ -61,6 +61,10 @@ namespace X39
 		{
 			children.push_back(child);
 		}
+		void GuiBase::clearControls(void)
+		{
+			children.clear();
+		}
 
 		void GuiBase::drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad)
 		{

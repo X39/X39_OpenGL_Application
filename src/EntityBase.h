@@ -6,9 +6,11 @@ namespace X39
 	{
 		class EntityBase
 		{
+		protected:
+			~EntityBase() {};
 		public:
 			EntityBase();
-			~EntityBase();
+			virtual void deconstructEntity() { delete this; }
 			virtual void kill() final;
 			virtual void update() = 0;
 			virtual bool isVisible() = 0;

@@ -29,6 +29,7 @@ namespace X39
 				~GuiBase(void);
 
 				void addChild(GuiBase* child);
+				void clearControls(void);
 		
 				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad);
 				static void drawTexture2D(::X39::Singletons::MATERIAL* mat, unsigned int textureIndex, double tPosX, double tPosY, double tWidth, double tHeight, double uiPosX, double uiPosY, double uiWidth, double uiHeight, Shader& shad);

@@ -80,7 +80,9 @@ namespace X39 {
 	}
 	void Simulation::addEntity(Entity::EntityBase* ent)
 	{
+		taskMutex.lock();
 		_entityList.push_back(ent);
+		taskMutex.unlock();
 	}
 	void Simulation::performEntityDrop(void)
 	{
@@ -93,7 +95,8 @@ namespace X39 {
 				{
 					_entityList[i] = _entityList.back();
 					_entityList.pop_back();
-					_dropList[i] = _dropList.back();
+					_dropList[j]->deconstructEntity();
+					_dropList[j] = _dropList.back();
 					_dropList.pop_back();
 					break;
 				}

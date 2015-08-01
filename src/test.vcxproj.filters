@@ -809,6 +809,9 @@
     <ClInclude Include="MainMenu.h">
       <Filter>Headerdateien\World</Filter>
     </ClInclude>
+    <ClInclude Include="TestWorld.h">
+      <Filter>Headerdateien\World</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\external\glm\core\func_common.inl">

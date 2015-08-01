@@ -133,7 +133,8 @@ namespace X39
 			//	::X39::Singletons::FontManager::getInstance().fontShader
 			//);
 			//::X39::Singletons::FontManager::getInstance().fontShader.unuse();
-			::X39::GlobalObject::getInstance().mainDisplay->draw();
+			if (::X39::GlobalObject::getInstance().mainDisplay)
+				::X39::GlobalObject::getInstance().mainDisplay->draw();
 			glPopMatrix();
 
 			SwapBuffers(::X39::GlobalObject::getInstance().handleDeviceContext);

@@ -10,13 +10,18 @@ namespace X39
 	{
 		class NormalizedEntity : public EntityLiving, public RenderBase
 		{
-		private:
+		protected:
 			GLuint test_vaoID;
 			GLuint test_vertBufferID;
 			GLuint test_indexBufferID;
 			::X39::Shader* test_shad;
+			~NormalizedEntity()
+			{
+				this->deconstructRenderer();
+			}
 		public:
 			NormalizedEntity(double i) : EntityLiving(0, 1, i, 0.001 * i), RenderBase() {}
+			virtual void deconstructEntity() { delete this; }
 			virtual void render()
 			{
 				glm::mat4 viewMatrix = X39::Singletons::Camera::getInstance().getViewPort();

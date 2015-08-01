@@ -377,6 +377,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="startPoint.h" />
+    <ClInclude Include="TestWorld.h" />
     <ClInclude Include="WorldBase.h" />
   </ItemGroup>
   <ItemGroup>
