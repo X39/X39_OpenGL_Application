@@ -6,6 +6,7 @@
 #include <vector>
 #include <queue>
 #include <mutex>
+#include <omp.h>
 
 
 namespace X39 {
@@ -24,9 +25,11 @@ namespace X39 {
 	void Simulation::uninit(void)
 	{
 		for (auto& it : threadPool)
-		{
 			it->terminate(true);
+		for (auto& it : threadPool)
+		{
 			while (!it->isTerminated());
+			it->terminate(false);
 		}
 		threadPool.clear();
 		while (!toDoTaskList.empty())
@@ -42,7 +45,8 @@ namespace X39 {
 	}
 	void Simulation::prepareThreadPool()
 	{
-		threadPool.push_back(Threading::PoolThread::createPoolThread(*this));
+		//for (int i = 0; i < 10; i++)
+			threadPool.push_back(Threading::PoolThread::createPoolThread(*this));
 	}
 
 	Threading::BaseTask* Simulation::getNextTask(void* thread)
@@ -52,13 +56,27 @@ namespace X39 {
 		if (toDoTaskList.empty())
 		{
 			if (threadPool.size() > 1)
-				((Threading::PoolThread*)thread)->terminate(false);
+				((Threading::PoolThread*)thread)->terminate(false,
+				[](Threading::PoolThread* pt) {
+				taskMutex.lock();
+				for (int i = 0; i < threadPool.size(); i++)
+				{
+					auto it = threadPool[i];
+					if (it == pt)
+					{
+						threadPool[i] = threadPool.back();
+						threadPool.pop_back();
+						break;
+					}
+				}
+				taskMutex.unlock();
+			});
 			returnValue = NULL;
 		}
 		else
 		{
 			size_t taskListSize = toDoTaskList.size();
-			if (taskListSize / 100 > 0)
+			if (taskListSize / 100 / threadPool.size() > 0)
 			{
 				threadPool.push_back(Threading::PoolThread::createPoolThread(*this));
 			}
@@ -80,9 +98,16 @@ namespace X39 {
 	}
 	void Simulation::addEntity(Entity::EntityBase* ent)
 	{
-		taskMutex.lock();
-		_entityList.push_back(ent);
-		taskMutex.unlock();
+		try
+		{
+			taskMutex.lock();
+			_entityList.push_back(ent);
+			taskMutex.unlock();
+		}
+		catch (std::exception e)
+		{
+			LOGGER_WRITE(Logger::ERRORmsg, e.what());
+		}
 	}
 	void Simulation::performEntityDrop(void)
 	{
@@ -114,15 +139,31 @@ namespace X39 {
 	}
 	void Simulation::setWorld(::X39::WorldBase* world)
 	{
+		taskMutex.lock();
 		if (currentWorld != nullptr)
 		{
 			currentWorld->destroyWorld();
 			delete currentWorld;
 		}
 		currentWorld = world;
+		for (int i = 0; i < toDoTaskList.size(); i++)
+		{
+			delete toDoTaskList.front();
+			toDoTaskList.pop();
+		}
+		taskMutex.unlock();
+		Singletons::RenderManager::getInstance().setWorld(currentWorld);
 		if (currentWorld != nullptr)
 		{
 			currentWorld->prepareWorld();
 		}
+	}
+	::X39::WorldBase* Simulation::getWorld(void)
+	{
+		return currentWorld;
+	}
+	unsigned int Simulation::getThreadCount(void)
+	{
+		return threadPool.size();
 	}
 }

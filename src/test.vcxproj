@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -17,6 +17,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{59644AE4-7FCA-4A49-AE77-A0F2231A4E41}</ProjectGuid>
     <RootNamespace>test</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -25,14 +26,14 @@
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='x64|Win32'" Label="Configuration">
@@ -40,7 +41,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -80,6 +81,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include\external;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\externalSpecial\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -115,6 +117,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir)..\include\external;$(ProjectDir)..\include\internal;$(ProjectDir)..\include\externalSpecial\freetype;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,7 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\include\external\glm\core\dummy.cpp" />
+    <ClCompile Include="..\include\external\glm\detail\dummy.cpp" />
     <ClCompile Include="..\include\external\tgaLoader\tga.c" />
     <ClCompile Include="..\include\internal\CommandHandler\CommandHandler.cpp" />
     <ClCompile Include="..\include\internal\dotX39\DocumentReader.cpp" />
@@ -139,6 +142,8 @@
     <ClCompile Include="EntityBase.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="GenWolrd.hpp" />
+    <ClCompile Include="GenWorld.cpp" />
     <ClCompile Include="GlobalObject.cpp" />
     <ClCompile Include="GuiBase.cpp" />
     <ClCompile Include="KeyHandler.cpp" />
@@ -146,12 +151,14 @@
     <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mouse.cpp" />
+    <ClCompile Include="NormalizedEntity.cpp" />
     <ClCompile Include="PoolThread.cpp" />
     <ClCompile Include="RenderBase.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Simulation.cpp" />
     <ClCompile Include="startPoint.cpp" />
+    <ClCompile Include="TestWorld.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\external\glm\core\func_common.hpp" />
@@ -365,7 +372,7 @@
     <ClInclude Include="KeyEventCodes.h" />
     <ClInclude Include="KeyHandler.h" />
     <ClInclude Include="Logger.h" />
-    <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="MainMenu.hpp" />
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mouse.h" />
@@ -377,8 +384,9 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Simulation.h" />
     <ClInclude Include="startPoint.h" />
-    <ClInclude Include="TestWorld.h" />
-    <ClInclude Include="WorldBase.h" />
+    <ClInclude Include="TestWorld.hpp" />
+    <ClInclude Include="WorldBase.hpp" />
+    <ClInclude Include="WorldUpdateTask.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\include\external\glm\core\func_common.inl" />

@@ -55,13 +55,13 @@
     <Filter Include="Headerdateien\World">
       <UniqueIdentifier>{4b5e076e-7710-48f3-90b3-e585457d8efe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\World">
+      <UniqueIdentifier>{f74f048c-437e-492d-9fed-e1125490defd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="startPoint.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\include\external\glm\core\dummy.cpp">
-      <Filter>Include</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Quelldateien</Filter>
@@ -134,6 +134,21 @@
     </ClCompile>
     <ClCompile Include="EntityBase.cpp">
       <Filter>Quelldateien\EntitiySystem\BaseClasses</Filter>
+    </ClCompile>
+    <ClCompile Include="GenWolrd.hpp">
+      <Filter>Headerdateien\World</Filter>
+    </ClCompile>
+    <ClCompile Include="GenWorld.cpp">
+      <Filter>Quelldateien\World</Filter>
+    </ClCompile>
+    <ClCompile Include="NormalizedEntity.cpp">
+      <Filter>Quelldateien\EntitiySystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\external\glm\detail\dummy.cpp">
+      <Filter>Include</Filter>
+    </ClCompile>
+    <ClCompile Include="TestWorld.cpp">
+      <Filter>Quelldateien\World</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -803,14 +818,17 @@
     <ClInclude Include="EntityUpdateTask.h">
       <Filter>Headerdateien\ThreadPool</Filter>
     </ClInclude>
-    <ClInclude Include="WorldBase.h">
+    <ClInclude Include="MainMenu.hpp">
       <Filter>Headerdateien\World</Filter>
     </ClInclude>
-    <ClInclude Include="MainMenu.h">
+    <ClInclude Include="TestWorld.hpp">
       <Filter>Headerdateien\World</Filter>
     </ClInclude>
-    <ClInclude Include="TestWorld.h">
+    <ClInclude Include="WorldBase.hpp">
       <Filter>Headerdateien\World</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldUpdateTask.h">
+      <Filter>Headerdateien\ThreadPool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

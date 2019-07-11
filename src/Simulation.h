@@ -1,7 +1,8 @@
 #pragma once
+#include "globals.h"
 #include "BaseTask.h"
 #include "EntityBase.h"
-#include "WorldBase.h"
+#include "WorldBase.hpp"
 #include <vector>
 namespace X39 {
 	class Simulation final
@@ -34,5 +35,7 @@ namespace X39 {
 		void init(void);
 		void uninit(void);
 		void setWorld(::X39::WorldBase*);
+		::X39::WorldBase* getWorld(void);
+		unsigned int getThreadCount(void);
 	};
 }

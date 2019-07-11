@@ -71,5 +71,8 @@
 #include "GlobalObject.h"
 #include "FontManager.h"
 
+
+//#define _CRTDBG_MAP_ALLOC
+
 #endif
 //-----------------------------------------------------------------

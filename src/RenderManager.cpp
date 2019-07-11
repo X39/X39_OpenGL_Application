@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "Simulation.h"
 #include "RenderBase.h"
-#include "WorldBase.h"
+#include "WorldBase.hpp"
 #include <array>
 #include <omp.h>
 
@@ -100,6 +100,8 @@ namespace X39
 			{
 				it->doRender();
 			}
+			if (currentWorld)
+				currentWorld->render();
 			glPopMatrix();
 
 			//2D projection

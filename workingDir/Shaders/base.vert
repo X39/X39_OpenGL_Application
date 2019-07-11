@@ -13,6 +13,6 @@ out vec2 UV;
 
 void main()
 {
-    gl_Position = vec4((vertexPosition_modelspace + worldPosition), 1) * viewMatrix * projectionMatrix * modelMatrix;
+    gl_Position = vec4((vertexPosition_modelspace + worldPosition), 1) * vec4(1.0f * 0.25f, 1.0f * 0.25f, 1.0f * 0.25f, 1) * viewMatrix * projectionMatrix * modelMatrix;
 	UV = vertexUV_modelspace;
 }

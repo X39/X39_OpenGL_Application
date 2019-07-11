@@ -8,7 +8,9 @@
 #include "Simulation.h"
 #include "NormalizedEntity.h"
 #include "EntityUpdateTask.h"
-#include "MainMenu.h"
+#include "WorldUpdateTask.h"
+#include "MainMenu.hpp"
+
 
 
 #include <windows.h>
@@ -19,6 +21,12 @@
 #include <omp.h>
 #include <array>
 #include <mutex>
+
+#ifdef _CRTDBG_MAP_ALLOC
+	#include <crtdbg.h>
+#endif
+
+
 static bool exitFlag = false;
 static int exitCode = 0;
 LRESULT CALLBACK WndProc(   HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam ) 
@@ -454,9 +462,13 @@ bool CheckForOpenGLErrors(void)
 {
 	int i;
 	bool flag = false;
-	std::string errorString = "[GLError] got following errors: \n";
+	std::string errorString;
 	while((i = glGetError()) != GL_NO_ERROR)
 	{
+		if (!flag)
+		{
+			errorString.append("[GLError] got following errors: \n");
+		}
 		flag = true;
 		switch(i)
 		{
@@ -520,6 +532,9 @@ bool doDisplayMouseMoveHandling(int posX, int posY, LPPOINT mousePos)
 }
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine, int iCmdShow)
 {
+#ifdef _CRTDBG_MAP_ALLOC
+	_crtBreakAlloc = 510327;
+#endif
 	LOGGER_START(::Logger::CONFIG, "log.txt")
 #ifdef _DEBUG
 	createConsoleWindow();
@@ -608,15 +623,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR szCmdLine
 			//Add entity update tasks to scheduler
 			auto& entityList = simulation.getEntityList();
 			size_t entityListSize = entityList.size();
-			const size_t maxEntsPerTask = 100;
+			const size_t maxEntsPerTask = 10;
+			simulation.addTask(new ::X39::Threading::WorldUpdateTask(simulation.getWorld()));
 			for (size_t i = 0; i < entityListSize; i += maxEntsPerTask)
 				simulation.addTask(new ::X39::Threading::EntityUpdateTask(simulation.getEntityList(), i, (i + maxEntsPerTask > entityListSize ? entityListSize : i + maxEntsPerTask)));
-
+			//LOGGER_WRITE(::Logger::Priority::INFO, std::to_string(simulation.getThreadCount()));
         }
 	}
 	simulation.uninit();
 	
     #pragma endregion
-
+#ifdef _CRTDBG_MAP_ALLOC
+	_CrtDumpMemoryLeaks();
+#endif
     return msg.wParam;
 }

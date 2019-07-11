@@ -32,12 +32,15 @@ namespace X39 {
 			}
 			poolObject->wasTerminated = true;
 			while (poolObject->waitForCheck);
+			if (poolObject->callback)
+				poolObject->callback(poolObject);
 			delete poolObject;
 		}
-		void PoolThread::terminate(bool waitForCheck)
+		void PoolThread::terminate(bool waitForCheck, std::function<void(PoolThread*)> callback)
 		{
 			this->doTerminate = true;
 			this->waitForCheck = waitForCheck;
+			this->callback = callback;
 		}
 		bool PoolThread::isTerminated(void)
 		{

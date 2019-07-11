@@ -16,6 +16,10 @@ namespace X39 {
 				firstIndex = fIndex;
 				lastIndex = lIndex;
 			}
+			~EntityUpdateTask()
+			{
+				list.clear();
+			}
 			virtual void execute(void)
 			{
 				for (int i = this->firstIndex; i < this->lastIndex; i++)
